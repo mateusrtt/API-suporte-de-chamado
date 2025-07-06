@@ -5,6 +5,9 @@ namespace api_sistema_de_chamado.Services.AuthService
 {
     public interface IAuthInterface
     {
-        Task<Response<UsuarioCriacaoDto>> Registrar(UsuarioCriacaoDto usuarioRegistro);
+        Task<Response<UsuarioCriacaoDto>> RegistrarUsuario(UsuarioCriacaoDto usuarioRegistro);
+        Task<Response<UsuarioCriacaoDto>> RegistrarAdmin(UsuarioCriacaoDto usuarioRegistro);
     }
+
 }
+

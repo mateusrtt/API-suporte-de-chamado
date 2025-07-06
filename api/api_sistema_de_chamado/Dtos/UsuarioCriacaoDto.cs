@@ -13,7 +13,5 @@ namespace api_sistema_de_chamado.Dtos
         public string Senha { get; set; }
         [Compare("Senha", ErrorMessage = "Senha nâo coincidem!")]
         public string ConfirmarSenha { get; set; }
-        [Required(ErrorMessage = "O campo cargo é obrigatório")]
-        public CargoEnum Cargo { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using api_sistema_de_chamado.Data;
+using api_sistema_de_chamado.Repositories.Usuario;
 using api_sistema_de_chamado.Services.AuthService;
 using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
 builder.Services.AddScoped<IAuthInterface, AuthService>();
 builder.Services.AddScoped<ISenhaInterface, SenhaService>();

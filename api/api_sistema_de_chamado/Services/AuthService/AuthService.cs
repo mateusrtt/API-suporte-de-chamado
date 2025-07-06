@@ -2,27 +2,45 @@
 using api_sistema_de_chamado.Dtos;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Services.SenhaService;
+using api_sistema_de_chamado.Repositories.Usuario;
+using api_sistema_de_chamado.Enum;
 
 namespace api_sistema_de_chamado.Services.AuthService
 {
     public class AuthService : IAuthInterface
     {
-        private readonly AppDbContext _context;
+        private readonly IUsuarioRepository _usuarioRepository;
         private readonly ISenhaInterface _senhaInterface;
 
-        public AuthService(AppDbContext context, ISenhaInterface senhaInterface)
+        public AuthService(IUsuarioRepository usuarioRepository, ISenhaInterface senhaInterface)
         {
-            _context = context;
+            _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
         }
 
-        public async Task<Response<UsuarioCriacaoDto>> Registrar(UsuarioCriacaoDto usuarioRegistro)
+
+        public async Task<Response<UsuarioCriacaoDto>> RegistrarUsuario(UsuarioCriacaoDto usuarioRegistro)
+        {
+            return await Registrar(usuarioRegistro, CargoEnum.Usuario);
+        }
+
+        public async Task<Response<UsuarioCriacaoDto>> RegistrarAdmin(UsuarioCriacaoDto usuarioRegistro)
+        {
+            return await Registrar(usuarioRegistro, CargoEnum.Administrador);
+        }
+
+
+        public async Task<Response<UsuarioCriacaoDto>> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo)
         {
             Response<UsuarioCriacaoDto> respostaServico = new Response<UsuarioCriacaoDto>();
 
             try
             {
-                if (!VerificaSeEmailUsuarioJaExiste(usuarioRegistro))
+                bool usuarioDisponivel = await _usuarioRepository.ExisteUsuarioOuEmailAsync(
+                     usuarioRegistro.Nome, usuarioRegistro.Email);
+
+
+                if (!usuarioDisponivel)
                 {
                     respostaServico.Dados = null;
                     respostaServico.Status = false;
@@ -36,13 +54,13 @@ namespace api_sistema_de_chamado.Services.AuthService
                 {
                     Nome = usuarioRegistro.Nome,
                     Email = usuarioRegistro.Email,
-                    Cargo = usuarioRegistro.Cargo,
+                    Cargo = cargo,
                     SenhaHash = senhaHash,
                     SenhaSalt = senhaSalt
                 };
 
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
+                await _usuarioRepository.AdicionarAsync(usuario);
+                await _usuarioRepository.SalvarAsync();
 
                 respostaServico.Mensagem = "Usuário cadastrado com sucesso!";
 
@@ -56,18 +74,5 @@ namespace api_sistema_de_chamado.Services.AuthService
 
             return respostaServico;
         }
-
-
-        public bool VerificaSeEmailUsuarioJaExiste(UsuarioCriacaoDto usuarioRegistro)
-        {
-            var usuario = _context.Usuario.FirstOrDefault(userBanco => userBanco.Email == usuarioRegistro.Email || userBanco.Nome == usuarioRegistro.Nome);
-
-            if (usuario != null) return false;
-
-            return true;
-
-        }
-
-
     }
 }
