@@ -10,7 +10,7 @@ namespace api_sistema_de_chamado.Controllers
     {
 
         [HttpPost]
-        public async Task<ActionResult> Register(UsuarioCriacao usuarioRegister) 
+        public async Task<ActionResult> Register(UsuarioCriacaoDto usuarioRegister) 
         {
             return Ok();
 

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace api_sistema_de_chamado.Dtos
 {
-    public class UsuarioCriacao
+    public class UsuarioCriacaoDto
     {
         [Required(ErrorMessage = "O campo nome é obrigatório")]
         public string Nome { get; set; }
