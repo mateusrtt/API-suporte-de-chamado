@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using api_sistema_de_chamado.Dtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_sistema_de_chamado.Controllers
@@ -7,5 +8,13 @@ namespace api_sistema_de_chamado.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+
+        [HttpPost]
+        public async Task<ActionResult> Register(UsuarioCriacao usuarioRegister) 
+        {
+            return Ok();
+
+        }
+
     }
 }
