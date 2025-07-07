@@ -28,6 +28,5 @@ namespace api_sistema_de_chamado.Controllers
             var resultado = await _authService.RegistrarAdmin(dto);
             return Ok(resultado);
         }
-
     }
 }
