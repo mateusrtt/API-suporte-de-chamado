@@ -27,5 +27,11 @@ namespace api_sistema_de_chamado.Repositories.Usuario
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<UsuariosModel?> ObterPorEmailAsync(string email)
+        {
+            return await _context.Usuario.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
     }
 }

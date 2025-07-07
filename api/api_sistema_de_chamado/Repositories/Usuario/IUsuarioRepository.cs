@@ -7,5 +7,6 @@ namespace api_sistema_de_chamado.Repositories.Usuario
         Task<bool> ExisteUsuarioOuEmailAsync(string nome, string email);
         Task AdicionarAsync(UsuariosModel usuario);
         Task SalvarAsync();
+        Task<UsuariosModel?> ObterPorEmailAsync(string email);
     }
 }

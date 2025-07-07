@@ -29,5 +29,12 @@ namespace api_sistema_de_chamado.Controllers
             return Ok(resultado);
         }
 
+        [HttpPost("login")]
+        public async Task<ActionResult> Login(UsuarioLoginDto usuarioLogin)
+        {
+            var resposta = await _authService.Login(usuarioLogin);
+            return Ok(resposta);
+        }
+
     }
 }
