@@ -74,5 +74,43 @@ namespace api_sistema_de_chamado.Services.AuthService
 
             return respostaServico;
         }
+
+        public async Task<Response<String>> Login(UsuarioLoginDto usuarioLogin) 
+        {
+            Response<String> respostaServico = new Response<String>();
+
+            try
+            {
+                var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email);
+
+                if (usuario == null)
+                {
+                    respostaServico.Mensagem = "Email invalido!";
+                    respostaServico.Status = false;
+                    return respostaServico;
+                }
+
+                if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
+                {
+                    respostaServico.Mensagem = "Senha invalido!";
+                    respostaServico.Status = false;
+                    return respostaServico;
+                }
+
+                var token = _senhaInterface.CriarToken(usuario);
+
+                respostaServico.Dados = token;
+                respostaServico.Mensagem = "Usuário logado com sucesso!";
+
+            } catch (Exception ex)
+            {
+                respostaServico.Dados = null;
+                respostaServico.Mensagem = ex.Message;
+                respostaServico.Status = false;
+            }
+                
+            return respostaServico;
+        }
+
     }
 }
