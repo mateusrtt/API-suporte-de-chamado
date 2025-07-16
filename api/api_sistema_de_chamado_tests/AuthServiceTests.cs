@@ -108,5 +108,26 @@ namespace api_sistema_de_chamado_tests
             Assert.True(resultado.Status); 
             Assert.Equal("fake-jwt-token", resultado.Dados); // Token retornado
         }
+
+        [Fact]
+        public async Task Login_Deve_Falhar_Se_Usuario_Nao_Encontrado()
+        {
+            // Arrange
+            var dto = new UsuarioLoginDto
+            {
+                Email = "teste@email.com",
+                Senha = "senha"
+            };
+
+            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync((UsuariosModel?)null);
+
+            // Act
+            var resultado = await _authService.Login(dto);
+
+            // Assert
+            Assert.False(resultado.Status); // Deve falhar
+            Assert.Equal("Email invalido!", resultado.Mensagem);
+        }
+
     }
 }
