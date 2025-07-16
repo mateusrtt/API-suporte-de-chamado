@@ -129,5 +129,35 @@ namespace api_sistema_de_chamado_tests
             Assert.Equal("Email invalido!", resultado.Mensagem);
         }
 
+        [Fact]
+        public async Task Login_DeveFalhar_SeSenhaIncorreta()
+        {
+            // Arrange
+            var dto = new UsuarioLoginDto
+            {
+                Email = "teste@email.com",
+                Senha = "senhaerrada"
+            };
+
+            var usuario = new UsuariosModel
+            {
+                Nome = "Teste",
+                Email = dto.Email,
+                Cargo = CargoEnum.Usuario,
+                SenhaHash = new byte[1],  
+                SenhaSalt = new byte[1]
+            };
+
+            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
+
+            _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(false);
+
+            // Act
+            var resultado = await _authService.Login(dto);
+
+            // Assert
+            Assert.False(resultado.Status); // Deve falhar
+            Assert.Equal("Senha invalido!", resultado.Mensagem);
+        }
     }
 }
