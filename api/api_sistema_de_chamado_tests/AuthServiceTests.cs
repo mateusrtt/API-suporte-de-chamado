@@ -52,7 +52,29 @@ namespace api_sistema_de_chamado_tests
             // Assert
             Assert.True(resultado.Status); // Deve retornar sucesso
             Assert.Equal("Usuário cadastrado com sucesso!", resultado.Mensagem);
+        }
 
+        [Fact]
+        public async Task RegistrarUsuario_DeveFalhar_SeUsuarioExistir()
+        {
+            //Arrange
+            var dto = new UsuarioCriacaoDto
+            {
+                Nome = "João",
+                Email = "joao@email.com",
+                Senha = "123456",
+                ConfirmarSenha = "123456"
+            };
+
+            _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email))
+                .ReturnsAsync(false);
+
+            // Act
+            var resultado = await _authService.RegistrarUsuario(dto);
+
+            // Assert
+            Assert.False(resultado.Status); // Deve falhar
+            Assert.Equal("Email/usuário já cadastrados!", resultado.Mensagem);
         }
     }
 }
