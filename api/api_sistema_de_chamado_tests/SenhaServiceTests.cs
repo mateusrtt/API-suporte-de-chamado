@@ -38,5 +38,19 @@ namespace api_sistema_de_chamado_tests
             Assert.NotEmpty(salt);
         }
 
+        [Fact]
+        public void Verifica_SenhaHash_Deve_Retornar_True_Para_SenhaCorreta()
+        {
+            // Arrange
+            string senha = "senha123";
+            _senhaService.CriarSenhaHash(senha, out byte[] hash, out byte[] salt);
+
+            // Act
+            bool resultado = _senhaService.VerificaSenhaHash(senha, hash, salt);
+
+            // Assert
+            Assert.True(resultado);
+        }
+
     }
 }
