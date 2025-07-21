@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -78,7 +79,7 @@ namespace api_sistema_de_chamado_tests
             {
                 Nome = "Mateus",
                 Email = "mateus@email.com",
-                Cargo = CargoEnum.Usuario
+                Cargo = CargoEnum.Administrador
             };
 
             // Act
@@ -89,8 +90,13 @@ namespace api_sistema_de_chamado_tests
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var podeLerToken = tokenHandler.CanReadToken(tokenGerado);
-
             Assert.True(podeLerToken); // Confirma que é um JWT válido
+
+            var token = tokenHandler.ReadJwtToken(tokenGerado); 
+            var roleClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+
+            Assert.NotNull(roleClaim); 
+            Assert.Equal("Administrador", roleClaim!.Value); 
         }
 
     }
