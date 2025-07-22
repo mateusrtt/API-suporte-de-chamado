@@ -54,8 +54,44 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = false,
         ValidateIssuer = false,
     };
-});
 
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
+
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+
+            var json = """
+            {
+                "status": false,
+                "mensagem": "Apenas administradores têm permissão para acessar esta rota.",
+                "dados": null
+            }
+            """;
+
+            return context.Response.WriteAsync(json);
+        },
+
+        OnForbidden = context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
+
+            var json = """
+            {
+                "status": false,
+                "mensagem": "Você não tem permissão para acessar esta funcionalidade.",
+                "dados": null
+            }
+            """;
+
+            return context.Response.WriteAsync(json);
+        }
+    };
+});
 
 var app = builder.Build();
 
