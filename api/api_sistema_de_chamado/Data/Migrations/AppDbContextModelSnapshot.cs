@@ -54,7 +54,7 @@ namespace api_sistema_de_chamado.Data.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Chamado");
+                    b.ToTable("Chamado", (string)null);
                 });
 
             modelBuilder.Entity("api_sistema_de_chamado.Models.UsuariosModel", b =>
@@ -89,7 +89,7 @@ namespace api_sistema_de_chamado.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuario");
+                    b.ToTable("Usuario", (string)null);
                 });
 
             modelBuilder.Entity("api_sistema_de_chamado.Models.ChamadoModel", b =>
