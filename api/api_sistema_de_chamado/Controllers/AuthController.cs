@@ -1,5 +1,7 @@
 ﻿using api_sistema_de_chamado.Dtos;
+using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Services.AuthService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +24,7 @@ namespace api_sistema_de_chamado.Controllers
             return Ok(resultado);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("register-admin")]
         public async Task<ActionResult> RegisterAdmin([FromBody] UsuarioCriacaoDto dto)
         {
@@ -35,6 +38,5 @@ namespace api_sistema_de_chamado.Controllers
             var resposta = await _authService.Login(usuarioLogin);
             return Ok(resposta);
         }
-
     }
 }
