@@ -37,10 +37,6 @@ namespace api_sistema_de_chamado.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Local")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Resposta")
                         .HasColumnType("nvarchar(max)");
 
@@ -54,7 +50,7 @@ namespace api_sistema_de_chamado.Data.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Chamado", (string)null);
+                    b.ToTable("Chamado");
                 });
 
             modelBuilder.Entity("api_sistema_de_chamado.Models.UsuariosModel", b =>
@@ -89,7 +85,7 @@ namespace api_sistema_de_chamado.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuario", (string)null);
+                    b.ToTable("Usuario");
                 });
 
             modelBuilder.Entity("api_sistema_de_chamado.Models.ChamadoModel", b =>

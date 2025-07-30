@@ -5,7 +5,6 @@ namespace api_sistema_de_chamado.Models
     public class ChamadoModel
     {
         public int Id { get; set; }
-        public string Local { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public string? Resposta { get; set; }
         public StatusChamadoEnum Status { get; set; } = StatusChamadoEnum.Pendente;
