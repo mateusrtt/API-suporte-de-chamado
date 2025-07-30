@@ -37,6 +37,9 @@ namespace api_sistema_de_chamado.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Prioridade")
+                        .HasColumnType("int");
+
                     b.Property<string>("Resposta")
                         .HasColumnType("nvarchar(max)");
 

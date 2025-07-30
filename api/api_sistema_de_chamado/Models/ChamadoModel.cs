@@ -7,6 +7,7 @@ namespace api_sistema_de_chamado.Models
         public int Id { get; set; }
         public string Descricao { get; set; } = string.Empty;
         public string? Resposta { get; set; }
+        public PrioridadeEnum Prioridade { get; set; }
         public StatusChamadoEnum Status { get; set; } = StatusChamadoEnum.Pendente;
         public int UsuarioId { get; set; }
         public UsuariosModel Usuario { get; set; } = null!;
