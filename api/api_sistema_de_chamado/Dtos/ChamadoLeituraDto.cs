@@ -11,6 +11,5 @@ namespace api_sistema_de_chamado.Dtos
         public StatusChamadoEnum Status { get; set; }
         public DateTime ChamadoDataCriacao { get; set; }
         public int UsuarioId { get; set; }
-        public string? NomeUsuario { get; set; }
     }
 }

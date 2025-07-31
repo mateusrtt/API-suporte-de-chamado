@@ -1,6 +1,8 @@
 using api_sistema_de_chamado.Data;
+using api_sistema_de_chamado.Repositories.Chamado;
 using api_sistema_de_chamado.Repositories.Usuario;
 using api_sistema_de_chamado.Services.AuthService;
+using api_sistema_de_chamado.Services.ChamadoService;
 using api_sistema_de_chamado.Services.OpenAiService;
 using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,10 +23,12 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
 
 builder.Services.AddScoped<IAuthInterface, AuthService>();
 builder.Services.AddScoped<ISenhaInterface, SenhaService>();
 builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
+builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
 
 // Registra o AppDbContext com SQL Server via EF Core usando "DefaultConnection"
 builder.Services.AddDbContext<AppDbContext>(Options =>

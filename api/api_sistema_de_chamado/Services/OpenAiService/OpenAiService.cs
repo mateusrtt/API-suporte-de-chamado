@@ -22,7 +22,7 @@ namespace api_sistema_de_chamado.Services.OpenAiService
             if (string.IsNullOrEmpty(apiKey))
                 throw new Exception("Chave da API OpenAI não configurada.");
 
-            var prompt = $"Classifique a prioridade deste chamado como 1 (Baixa), 2 (Média) ou 3 (Alta): \"{descricao}\". Responda apenas com o número.";
+            var prompt = $"Classifique a prioridade deste chamado como 1 (Baixa), 2 (Média) ou 3 (Alta) baseada na descrição: \"{descricao}\". Responda apenas com o número sem texto extra ou explicações.";
 
             var requestBody = new
             {
@@ -54,7 +54,9 @@ namespace api_sistema_de_chamado.Services.OpenAiService
                 .GetProperty("content")
                 .GetString();
 
-            if (int.TryParse(resposta?.Trim(), out int prioridade) && prioridade >= 1 && prioridade <= 3)
+            var respostaLimpa = new string(resposta?.Where(char.IsDigit).ToArray() ?? Array.Empty<char>());
+
+            if (int.TryParse(respostaLimpa, out int prioridade) && prioridade >= 1 && prioridade <= 3)
                 return prioridade;
 
             throw new Exception("Resposta inválida da IA.");
