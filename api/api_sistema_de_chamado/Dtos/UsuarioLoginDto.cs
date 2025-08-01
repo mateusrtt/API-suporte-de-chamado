@@ -8,7 +8,6 @@ namespace api_sistema_de_chamado.Dtos
         [EmailAddress(ErrorMessage = "Email inválido!")]
         public string Email { get; set; } = string.Empty;
         [Required(ErrorMessage = "O campo senha é obrigatório")]
-        [StringLength(5, ErrorMessage = "A senha deve ter no máximo 5 caracteres")]
         public string Senha { get; set; } = string.Empty;
     }
 }

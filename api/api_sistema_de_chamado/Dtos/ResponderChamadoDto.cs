@@ -10,7 +10,5 @@ namespace api_sistema_de_chamado.Dtos
 
         [Required(ErrorMessage = "A resposta é obrigatória")]
         public string Resposta { get; set; } = string.Empty;
-
-        public StatusChamadoEnum Status { get; set; } = StatusChamadoEnum.Respondido;
     }
 }

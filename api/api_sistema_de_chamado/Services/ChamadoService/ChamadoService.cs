@@ -92,5 +92,50 @@ namespace api_sistema_de_chamado.Services.ChamadoService
             }
             return respostaServico;
         }
+
+        public async Task<Response<ChamadoLeituraDto>> ResponderChamadoAsync(ResponderChamadoDto dto)
+        {
+            var respostaServico = new Response<ChamadoLeituraDto>();
+
+            try
+            {
+                var chamado = await _chamadoRepository.ObterIdAsync(dto.Id);
+
+                if (chamado == null)
+                {
+                    respostaServico.Status = false;
+                    respostaServico.Mensagem = "Chamado não encontrado.";
+                    return respostaServico;
+                }
+
+                // Define a resposta e força o status como Respondido
+                chamado.Resposta = dto.Resposta;
+                chamado.Status = StatusChamadoEnum.Respondido;
+
+                await _chamadoRepository.AtualizarAsync(chamado);
+                await _chamadoRepository.SalvarAsync();
+
+                var chamadoDto = new ChamadoLeituraDto
+                {
+                    Id = chamado.Id,
+                    Descricao = chamado.Descricao,
+                    Resposta = chamado.Resposta,
+                    Status = chamado.Status,
+                    ChamadoDataCriacao = chamado.ChamadoDataCriacao,
+                    UsuarioId = chamado.UsuarioId,
+                    Prioridade = chamado.Prioridade
+                };
+
+                respostaServico.Status = true;
+                respostaServico.Mensagem = "Chamado respondido com sucesso!";
+                respostaServico.Dados = chamadoDto;
+            }
+            catch (Exception ex)
+            {
+                respostaServico.Status = false;
+                respostaServico.Mensagem = $"Erro ao responder chamado: {ex.Message}";
+            }
+            return respostaServico;
+        }
     }
 }

@@ -36,5 +36,13 @@ namespace api_sistema_de_chamado.Controllers
             var resultado = await _chamadoService.ListarChamadosPorUsuarioAsync(usuarioId);
             return Ok(resultado);
         }
+
+        [Authorize(Roles = "Administrador")]
+        [HttpPut("responder")]
+        public async Task<ActionResult<Response<ChamadoLeituraDto>>> ResponderChamado([FromBody] ResponderChamadoDto dto)
+        {
+            var resultado = await _chamadoService.ResponderChamadoAsync(dto);
+            return Ok(resultado);
+        }
     }
 }
