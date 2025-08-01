@@ -23,7 +23,7 @@ namespace api_sistema_de_chamado.Controllers
         [HttpPost("fazer")]
         public async Task<ActionResult<Response<ChamadoLeituraDto>>> FazerChamado([FromBody] FazerChamadoDto dto)
         {
-            int usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            int usuarioId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
             var resultado = await _chamadoService.FazerChamadoAsync(dto, usuarioId);
             return Ok(resultado);
         }
@@ -32,7 +32,7 @@ namespace api_sistema_de_chamado.Controllers
         [HttpGet("meus")]
         public async Task<ActionResult<Response<List<ChamadoLeituraDto>>>> ListarMeusChamados()
         {
-            int usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            int usuarioId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
             var resultado = await _chamadoService.ListarChamadosPorUsuarioAsync(usuarioId);
             return Ok(resultado);
         }

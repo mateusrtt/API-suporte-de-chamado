@@ -73,7 +73,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
             var json = """
             {
                 "status": false,
-                "mensagem": "Apenas administradores têm permissão para acessar esta rota.",
+                "mensagem": "Token inválido ou não autorizado.",
                 "dados": null
             }
             """;
