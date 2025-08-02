@@ -40,11 +40,18 @@ namespace api_sistema_de_chamado.Repositories.Chamado
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-
         public Task AtualizarAsync(ChamadoModel chamado)
         {
             _context.Chamado.Update(chamado);
             return Task.CompletedTask;
+        }
+
+        public async Task<List<ChamadoModel>> ObterTodosAsync()
+        {
+            return await _context.Chamado
+                .Include(c => c.Usuario)
+                .OrderByDescending(c => c.ChamadoDataCriacao)
+                .ToListAsync();
         }
     }
 }

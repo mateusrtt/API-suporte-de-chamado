@@ -137,5 +137,36 @@ namespace api_sistema_de_chamado.Services.ChamadoService
             }
             return respostaServico;
         }
+
+        public async Task<Response<List<ChamadoLeituraDto>>> ListarTodosOsChamadosAsync()
+        {
+            var respostaServico = new Response<List<ChamadoLeituraDto>>();
+
+            try
+            {
+                var chamados = await _chamadoRepository.ObterTodosAsync();
+
+                var listaDto = chamados.Select(c => new ChamadoLeituraDto
+                {
+                    Id = c.Id,
+                    Descricao = c.Descricao,
+                    Resposta = c.Resposta,
+                    Status = c.Status,
+                    ChamadoDataCriacao = c.ChamadoDataCriacao,
+                    UsuarioId = c.UsuarioId,
+                    Prioridade = c.Prioridade
+                }).ToList();
+
+                respostaServico.Dados = listaDto;
+                respostaServico.Status = true;
+            }
+            catch (Exception ex)
+            {
+                respostaServico.Status = false;
+                respostaServico.Mensagem = $"Erro ao listar todos os chamados: {ex.Message}";
+                respostaServico.Dados = null;
+            }
+            return respostaServico;
+        }
     }
 }

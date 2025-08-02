@@ -9,5 +9,6 @@ namespace api_sistema_de_chamado.Repositories.Chamado
         Task<List<ChamadoModel>> ObterPorUsuarioAsync(int usuarioId);
         Task AtualizarAsync(ChamadoModel chamado);
         Task<ChamadoModel?> ObterIdAsync(int id);
+        Task<List<ChamadoModel>> ObterTodosAsync();
     }
 }
