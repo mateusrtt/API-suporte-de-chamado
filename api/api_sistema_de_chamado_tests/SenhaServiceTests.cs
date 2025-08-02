@@ -77,6 +77,7 @@ namespace api_sistema_de_chamado_tests
             // Arrange
             var usuario = new UsuariosModel
             {
+                Id = 1,
                 Nome = "Mateus",
                 Email = "mateus@email.com",
                 Cargo = CargoEnum.Administrador
@@ -92,12 +93,15 @@ namespace api_sistema_de_chamado_tests
             var podeLerToken = tokenHandler.CanReadToken(tokenGerado);
             Assert.True(podeLerToken); // Confirma que é um JWT válido
 
-            var token = tokenHandler.ReadJwtToken(tokenGerado); 
+            var token = tokenHandler.ReadJwtToken(tokenGerado);
+
             var roleClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            Assert.NotNull(roleClaim);
+            Assert.Equal("Administrador", roleClaim!.Value);
 
-            Assert.NotNull(roleClaim); 
-            Assert.Equal("Administrador", roleClaim!.Value); 
+            var idClaim = token.Claims.FirstOrDefault(c => c.Type == "Id");
+            Assert.NotNull(idClaim);
+            Assert.Equal("1", idClaim!.Value);
         }
-
     }
 }
