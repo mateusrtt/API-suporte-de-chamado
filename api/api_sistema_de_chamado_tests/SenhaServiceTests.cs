@@ -71,37 +71,39 @@ namespace api_sistema_de_chamado_tests
             Assert.False(resultado);
         }
 
-        [Fact]
-        public void CriarToken_QuandoUsuarioValido_DeveGerarJwtTokenValido()
+        [Theory]
+        [InlineData(1, "Mateus", "mateus@email.com", CargoEnum.Administrador, "Administrador")]
+        [InlineData(2, "João", "joao@email.com", CargoEnum.Usuario, "Usuario")]
+        public void CriarToken_QuandoUsuarioValido_DeveGerarJwtTokenValido(
+            int id, string nome, string email, CargoEnum cargo, string cargoEsperado)
         {
             // Arrange
             var usuario = new UsuariosModel
             {
-                Id = 1,
-                Nome = "Mateus",
-                Email = "mateus@email.com",
-                Cargo = CargoEnum.Administrador
+                Id = id,
+                Nome = nome,
+                Email = email,
+                Cargo = cargo
             };
 
             // Act
             var tokenGerado = _senhaService.CriarToken(usuario);
 
             // Assert
-            Assert.False(string.IsNullOrWhiteSpace(tokenGerado)); // Garante que não é nulo ou vazio
+            Assert.False(string.IsNullOrWhiteSpace(tokenGerado)); 
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var podeLerToken = tokenHandler.CanReadToken(tokenGerado);
-            Assert.True(podeLerToken); // Confirma que é um JWT válido
+            Assert.True(tokenHandler.CanReadToken(tokenGerado)); 
 
             var token = tokenHandler.ReadJwtToken(tokenGerado);
 
             var roleClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
             Assert.NotNull(roleClaim);
-            Assert.Equal("Administrador", roleClaim!.Value);
+            Assert.Equal(cargoEsperado, roleClaim!.Value); 
 
             var idClaim = token.Claims.FirstOrDefault(c => c.Type == "Id");
             Assert.NotNull(idClaim);
-            Assert.Equal("1", idClaim!.Value);
+            Assert.Equal(id.ToString(), idClaim!.Value); 
         }
     }
 }
