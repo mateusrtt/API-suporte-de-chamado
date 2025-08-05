@@ -26,12 +26,14 @@ namespace api_sistema_de_chamado_tests
             _senhaService = new SenhaService(_configurationMock.Object);
         }
 
-        [Fact]
-        public void CriarSenha_Deve_Gerar_Hash_e_Salt()
+        [Theory]
+        [InlineData("senha123")]
+        [InlineData("minhaSenha@2025")]
+        [InlineData("Senha!Com#Caracteres$Especiais")]
+        [InlineData("1234567890")]
+        [InlineData("senha com espaço")]
+        public void CriarSenha_Deve_Gerar_Hash_e_Salt(string senha)
         {
-            // Arrange
-            string senha = "senha123";
-
             // Act
             _senhaService.CriarSenhaHash(senha, out byte[] hash, out byte[] salt);
 
@@ -40,13 +42,19 @@ namespace api_sistema_de_chamado_tests
             Assert.NotNull(salt);
             Assert.NotEmpty(hash);
             Assert.NotEmpty(salt);
+            Assert.NotEqual(hash, salt);
+            Assert.Equal(64, hash.Length);   
+            Assert.Equal(128, salt.Length);
         }
 
-        [Fact]
-        public void Verifica_SenhaHash_Deve_Retornar_True_Para_SenhaCorreta()
+        [Theory]
+        [InlineData("senha123")]
+        [InlineData("TesteSeguranca")]
+        [InlineData("123456789")]
+        [InlineData("SenhaCom!Simbolo")]
+        public void Verifica_SenhaHash_Deve_Retornar_True_Para_SenhaCorreta(string senha)
         {
             // Arrange
-            string senha = "senha123";
             _senhaService.CriarSenhaHash(senha, out byte[] hash, out byte[] salt);
 
             // Act
@@ -56,12 +64,14 @@ namespace api_sistema_de_chamado_tests
             Assert.True(resultado);
         }
 
-        [Fact]
-        public void Verifica_SenhaHash_Deve_Retornar_False_Para_SenhaErrada()
+        [Theory]
+        [InlineData("senha123", "outraSenha")]
+        [InlineData("minhaSenhaSegura", "senha123")]
+        [InlineData("senha com espaço", "senha sem espaço")]
+        [InlineData("senhaMAIUSCULA", "senhamaIuscula")]
+        public void Verifica_SenhaHash_Deve_Retornar_False_Para_SenhaErrada(string senhaCorreta, string senhaErrada)
         {
             // Arrange
-            string senhaCorreta = "senha123";
-            string senhaErrada = "senhaErrada";
             _senhaService.CriarSenhaHash(senhaCorreta, out byte[] hash, out byte[] salt);
 
             // Act
