@@ -40,6 +40,8 @@ namespace api_sistema_de_chamado.Services.OpenAiService
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
+            try
+            {
             var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
 
             if (!response.IsSuccessStatusCode)
@@ -59,7 +61,20 @@ namespace api_sistema_de_chamado.Services.OpenAiService
             if (int.TryParse(respostaLimpa, out int prioridade) && prioridade >= 1 && prioridade <= 3)
                 return prioridade;
 
-            throw new Exception("Resposta inválida da IA.");
+                throw new Exception("Não foi possível classificar o chamado automaticamente. Tente novamente mais tarde.");
+            }
+            catch (HttpRequestException)
+            {
+                throw new Exception("Sem conexão com a internet. Verifique sua conexão para enviar o chamado.");
+            }
+            catch (TaskCanceledException)
+            {
+                throw new Exception("A requisição expirou. Verifique sua conexão com a internet.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
