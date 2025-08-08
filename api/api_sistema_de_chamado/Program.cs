@@ -5,109 +5,37 @@ using api_sistema_de_chamado.Services.AuthService;
 using api_sistema_de_chamado.Services.ChamadoService;
 using api_sistema_de_chamado.Services.OpenAiService;
 using api_sistema_de_chamado.Services.SenhaService;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
-using System.Text.Json.Serialization;
-using System.Text;
+using api_sistema_de_chamado.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers()
-     .AddJsonOptions(options =>
-     {
-         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-     });
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configura Controllers e enums como string
+builder.Services.AddCustomControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-
+// Repositórios e serviços
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
-
 builder.Services.AddScoped<IAuthInterface, AuthService>();
 builder.Services.AddScoped<ISenhaInterface, SenhaService>();
 builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
 builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
 
-// Registra o AppDbContext com SQL Server via EF Core usando "DefaultConnection"
+// Banco de dados
 builder.Services.AddDbContext<AppDbContext>(Options =>
 {
     Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Configura Swagger e validação JWT (Bearer) para a API
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
+// Autenticação JWT
+builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!)),
-        ValidateAudience = false,
-        ValidateIssuer = false,
-    };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnChallenge = context =>
-        {
-            context.HandleResponse();
-
-            context.Response.StatusCode = 401;
-            context.Response.ContentType = "application/json";
-
-            var json = """
-            {
-                "status": false,
-                "mensagem": "Token inválido ou não autorizado.",
-                "dados": null
-            }
-            """;
-
-            return context.Response.WriteAsync(json);
-        },
-
-        OnForbidden = context =>
-        {
-            context.Response.StatusCode = 403;
-            context.Response.ContentType = "application/json";
-
-            var json = """
-            {
-                "status": false,
-                "mensagem": "Você não tem permissão para acessar esta funcionalidade.",
-                "dados": null
-            }
-            """;
-
-            return context.Response.WriteAsync(json);
-        }
-    };
-});
+// Swagger 
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -115,11 +43,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
