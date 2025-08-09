@@ -21,6 +21,7 @@ builder.Services.AddScoped<IAuthInterface, AuthService>();
 builder.Services.AddScoped<ISenhaInterface, SenhaService>();
 builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
 builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
+builder.Services.AddCustomCors();
 
 // Banco de dados
 builder.Services.AddDbContext<AppDbContext>(Options =>
@@ -42,6 +43,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
