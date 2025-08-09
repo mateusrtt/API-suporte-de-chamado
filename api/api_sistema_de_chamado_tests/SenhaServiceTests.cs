@@ -26,12 +26,14 @@ namespace api_sistema_de_chamado_tests
             _senhaService = new SenhaService(_configurationMock.Object);
         }
 
-        [Fact]
-        public void CriarSenha_Deve_Gerar_Hash_e_Salt()
+        [Theory]
+        [InlineData("senha123")]
+        [InlineData("minhaSenha@2025")]
+        [InlineData("Senha!Com#Caracteres$Especiais")]
+        [InlineData("1234567890")]
+        [InlineData("senha com espaço")]
+        public void CriarSenha_Deve_Gerar_Hash_e_Salt(string senha)
         {
-            // Arrange
-            string senha = "senha123";
-
             // Act
             _senhaService.CriarSenhaHash(senha, out byte[] hash, out byte[] salt);
 
@@ -40,13 +42,19 @@ namespace api_sistema_de_chamado_tests
             Assert.NotNull(salt);
             Assert.NotEmpty(hash);
             Assert.NotEmpty(salt);
+            Assert.NotEqual(hash, salt);
+            Assert.Equal(64, hash.Length);   
+            Assert.Equal(128, salt.Length);
         }
 
-        [Fact]
-        public void Verifica_SenhaHash_Deve_Retornar_True_Para_SenhaCorreta()
+        [Theory]
+        [InlineData("senha123")]
+        [InlineData("TesteSeguranca")]
+        [InlineData("123456789")]
+        [InlineData("SenhaCom!Simbolo")]
+        public void Verifica_SenhaHash_Deve_Retornar_True_Para_SenhaCorreta(string senha)
         {
             // Arrange
-            string senha = "senha123";
             _senhaService.CriarSenhaHash(senha, out byte[] hash, out byte[] salt);
 
             // Act
@@ -56,12 +64,14 @@ namespace api_sistema_de_chamado_tests
             Assert.True(resultado);
         }
 
-        [Fact]
-        public void Verifica_SenhaHash_Deve_Retornar_False_Para_SenhaErrada()
+        [Theory]
+        [InlineData("senha123", "outraSenha")]
+        [InlineData("minhaSenhaSegura", "senha123")]
+        [InlineData("senha com espaço", "senha sem espaço")]
+        [InlineData("senhaMAIUSCULA", "senhamaIuscula")]
+        public void Verifica_SenhaHash_Deve_Retornar_False_Para_SenhaErrada(string senhaCorreta, string senhaErrada)
         {
             // Arrange
-            string senhaCorreta = "senha123";
-            string senhaErrada = "senhaErrada";
             _senhaService.CriarSenhaHash(senhaCorreta, out byte[] hash, out byte[] salt);
 
             // Act
@@ -71,33 +81,39 @@ namespace api_sistema_de_chamado_tests
             Assert.False(resultado);
         }
 
-        [Fact]
-        public void CriarToken_QuandoUsuarioValido_DeveGerarJwtTokenValido()
+        [Theory]
+        [InlineData(1, "Mateus", "mateus@email.com", CargoEnum.Administrador, "Administrador")]
+        [InlineData(2, "João", "joao@email.com", CargoEnum.Usuario, "Usuario")]
+        public void CriarToken_QuandoUsuarioValido_DeveGerarJwtTokenValido(
+            int id, string nome, string email, CargoEnum cargo, string cargoEsperado)
         {
             // Arrange
             var usuario = new UsuariosModel
             {
-                Nome = "Mateus",
-                Email = "mateus@email.com",
-                Cargo = CargoEnum.Administrador
+                Id = id,
+                Nome = nome,
+                Email = email,
+                Cargo = cargo
             };
 
             // Act
             var tokenGerado = _senhaService.CriarToken(usuario);
 
             // Assert
-            Assert.False(string.IsNullOrWhiteSpace(tokenGerado)); // Garante que não é nulo ou vazio
+            Assert.False(string.IsNullOrWhiteSpace(tokenGerado)); 
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var podeLerToken = tokenHandler.CanReadToken(tokenGerado);
-            Assert.True(podeLerToken); // Confirma que é um JWT válido
+            Assert.True(tokenHandler.CanReadToken(tokenGerado)); 
 
-            var token = tokenHandler.ReadJwtToken(tokenGerado); 
+            var token = tokenHandler.ReadJwtToken(tokenGerado);
+
             var roleClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            Assert.NotNull(roleClaim);
+            Assert.Equal(cargoEsperado, roleClaim!.Value); 
 
-            Assert.NotNull(roleClaim); 
-            Assert.Equal("Administrador", roleClaim!.Value); 
+            var idClaim = token.Claims.FirstOrDefault(c => c.Type == "Id");
+            Assert.NotNull(idClaim);
+            Assert.Equal(id.ToString(), idClaim!.Value); 
         }
-
     }
 }

@@ -22,6 +22,40 @@ namespace api_sistema_de_chamado.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("api_sistema_de_chamado.Models.ChamadoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChamadoDataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Prioridade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Resposta")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Chamado");
+                });
+
             modelBuilder.Entity("api_sistema_de_chamado.Models.UsuariosModel", b =>
                 {
                     b.Property<int>("Id")
@@ -55,6 +89,22 @@ namespace api_sistema_de_chamado.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuario");
+                });
+
+            modelBuilder.Entity("api_sistema_de_chamado.Models.ChamadoModel", b =>
+                {
+                    b.HasOne("api_sistema_de_chamado.Models.UsuariosModel", "Usuario")
+                        .WithMany("Chamados")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("api_sistema_de_chamado.Models.UsuariosModel", b =>
+                {
+                    b.Navigation("Chamados");
                 });
 #pragma warning restore 612, 618
         }

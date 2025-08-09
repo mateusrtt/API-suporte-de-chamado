@@ -11,6 +11,6 @@ namespace api_sistema_de_chamado.Models
         public byte[] SenhaHash { get; set; } = Array.Empty<byte>();
         public byte[] SenhaSalt { get; set; } = Array.Empty<byte>();
         public DateTime TokenDataCriacao { get; set; } = DateTime.Now;
-
+        public ICollection<ChamadoModel>? Chamados { get; set; }
     }
 }

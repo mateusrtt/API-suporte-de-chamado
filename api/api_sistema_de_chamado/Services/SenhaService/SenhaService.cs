@@ -38,6 +38,7 @@ namespace api_sistema_de_chamado.Services.SenhaService
         {
             List<Claim> claims = new List<Claim>()
             {
+                new Claim("Id", usuario.Id.ToString()),
                 new Claim("Cargo", usuario.Cargo.ToString()),
                 new Claim("Email", usuario.Email),
                 new Claim("Username", usuario.Nome),
