@@ -108,6 +108,13 @@ namespace api_sistema_de_chamado.Services.ChamadoService
                     return respostaServico;
                 }
 
+                if (chamado.Status == StatusChamadoEnum.Respondido)
+                {
+                    respostaServico.Status = false;
+                    respostaServico.Mensagem = "Este chamado já foi respondido e não pode ser respondido novamente";
+                    return respostaServico;
+                }
+
                 // Define a resposta e força o status como Respondido
                 chamado.Resposta = dto.Resposta;
                 chamado.Status = StatusChamadoEnum.Respondido;
