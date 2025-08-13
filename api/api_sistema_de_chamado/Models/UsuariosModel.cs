@@ -4,13 +4,27 @@ namespace api_sistema_de_chamado.Models
 {
     public class UsuariosModel
     {
-        public int Id { get; set; }
-        public string Nome { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public CargoEnum Cargo { get; set; } 
-        public byte[] SenhaHash { get; set; } = Array.Empty<byte>();
-        public byte[] SenhaSalt { get; set; } = Array.Empty<byte>();
-        public DateTime TokenDataCriacao { get; set; } = DateTime.Now;
-        public ICollection<ChamadoModel>? Chamados { get; set; }
+        public int Id { get; private set; }
+        public string Nome { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public CargoEnum Cargo { get; private set; } 
+        public byte[] SenhaHash { get; private set; } = Array.Empty<byte>();
+        public byte[] SenhaSalt { get; private set; } = Array.Empty<byte>();
+        public DateTime TokenDataCriacao { get; private set; } = DateTime.Now;
+        public ICollection<ChamadoModel>? Chamados { get; private set; }
+
+        // Construtor vazio necessário para EF Core
+        protected UsuariosModel() { }
+
+        // Construtor para criação de usuários
+        public UsuariosModel(string nome, string email, CargoEnum cargo, byte[] senhaHash, byte[] senhaSalt)
+        {
+            Nome = nome;
+            Email = email;
+            Cargo = cargo;
+            SenhaHash = senhaHash;
+            SenhaSalt = senhaSalt;
+            TokenDataCriacao = DateTime.Now;
+        }
     }
 }

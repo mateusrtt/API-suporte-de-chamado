@@ -24,14 +24,11 @@ namespace api_sistema_de_chamado.Services.ChamadoService
             {
                 int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricaoAsync(dto.Descricao);
 
-                ChamadoModel chamado = new ChamadoModel
-                {
-                    Descricao = dto.Descricao,
-                    UsuarioId = usuarioId,
-                    Prioridade = (PrioridadeEnum)prioridadeNumero,
-                    Status = StatusChamadoEnum.Pendente,
-                    ChamadoDataCriacao = System.DateTime.Now
-                };
+                ChamadoModel chamado = new ChamadoModel(
+                     dto.Descricao,
+                     usuarioId,
+                     (PrioridadeEnum)prioridadeNumero
+                );
 
                 await _chamadoRepository.AdicionarAsync(chamado);
                 await _chamadoRepository.SalvarAsync();
@@ -116,8 +113,7 @@ namespace api_sistema_de_chamado.Services.ChamadoService
                 }
 
                 // Define a resposta e força o status como Respondido
-                chamado.Resposta = dto.Resposta;
-                chamado.Status = StatusChamadoEnum.Respondido;
+                chamado.Responder(dto.Resposta);
 
                 await _chamadoRepository.AtualizarAsync(chamado);
                 await _chamadoRepository.SalvarAsync();

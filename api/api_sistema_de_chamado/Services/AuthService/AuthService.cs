@@ -50,14 +50,13 @@ namespace api_sistema_de_chamado.Services.AuthService
 
                 _senhaInterface.CriarSenhaHash(usuarioRegistro.Senha, out byte[] senhaHash, out byte[] senhaSalt);
 
-                UsuariosModel usuario = new UsuariosModel()
-                {
-                    Nome = usuarioRegistro.Nome,
-                    Email = usuarioRegistro.Email,
-                    Cargo = cargo,
-                    SenhaHash = senhaHash,
-                    SenhaSalt = senhaSalt
-                };
+                UsuariosModel usuario = new UsuariosModel(
+                    usuarioRegistro.Nome,
+                    usuarioRegistro.Email,
+                    cargo,
+                    senhaHash,
+                    senhaSalt
+                );
 
                 await _usuarioRepository.AdicionarAsync(usuario);
                 await _usuarioRepository.SalvarAsync();

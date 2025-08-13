@@ -86,14 +86,13 @@ namespace api_sistema_de_chamado_tests
                 Senha = "senha"
             };
 
-            var usuario = new UsuariosModel
-            {
-                Nome = "Teste",
-                Email = dto.Email,
-                Cargo = CargoEnum.Usuario,
-                SenhaHash = new byte[1],
-                SenhaSalt = new byte[1]
-            };
+            var usuario = new UsuariosModel(
+                "Teste",
+                dto.Email,
+                CargoEnum.Usuario,
+                new byte[1],
+                new byte[1]
+            );
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
 
@@ -139,14 +138,13 @@ namespace api_sistema_de_chamado_tests
                 Senha = "senhaerrada"
             };
 
-            var usuario = new UsuariosModel
-            {
-                Nome = "Teste",
-                Email = dto.Email,
-                Cargo = CargoEnum.Usuario,
-                SenhaHash = new byte[1],  
-                SenhaSalt = new byte[1]
-            };
+            var usuario = new UsuariosModel(
+                "Teste",
+                dto.Email,
+                CargoEnum.Usuario,
+                new byte[1],  
+                new byte[1]
+            );
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
 
@@ -157,7 +155,7 @@ namespace api_sistema_de_chamado_tests
 
             // Assert
             Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Senha invalido!", resultado.Mensagem);
+            Assert.Equal("Senha invalida!", resultado.Mensagem);
         }
     }
 }

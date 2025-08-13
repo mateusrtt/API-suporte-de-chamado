@@ -86,15 +86,18 @@ namespace api_sistema_de_chamado_tests
         [InlineData(2, "João", "joao@email.com", CargoEnum.Usuario, "Usuario")]
         public void CriarToken_QuandoUsuarioValido_DeveGerarJwtTokenValido(
             int id, string nome, string email, CargoEnum cargo, string cargoEsperado)
-        {
-            // Arrange
-            var usuario = new UsuariosModel
             {
-                Id = id,
-                Nome = nome,
-                Email = email,
-                Cargo = cargo
-            };
+            // Arrange
+            var usuario = new UsuariosModel(
+                nome,
+                email,
+                cargo,
+                senhaHash: new byte[1],   
+                senhaSalt: new byte[1]    
+            );
+
+            var idProperty = typeof(UsuariosModel).GetProperty("Id");
+            idProperty!.SetValue(usuario, id);
 
             // Act
             var tokenGerado = _senhaService.CriarToken(usuario);
