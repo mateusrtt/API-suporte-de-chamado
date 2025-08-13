@@ -92,7 +92,7 @@ namespace api_sistema_de_chamado.Services.AuthService
 
                 if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
                 {
-                    respostaServico.Mensagem = "Senha invalido!";
+                    respostaServico.Mensagem = "Senha invalida!";
                     respostaServico.Status = false;
                     return respostaServico;
                 }
