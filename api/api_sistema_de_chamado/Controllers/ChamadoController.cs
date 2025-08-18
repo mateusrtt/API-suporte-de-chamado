@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace api_sistema_de_chamado.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("suporte/v1/chamados")]
     [ApiController]
     public class ChamadoController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace api_sistema_de_chamado.Controllers
         }
 
         [Authorize(Roles = "Usuario")]
-        [HttpPost("fazer")]
+        [HttpPost]
         public async Task<ActionResult<Response<ChamadoLeituraDto>>> FazerChamado([FromBody] FazerChamadoDto dto)
         {
             int usuarioId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
@@ -38,15 +38,15 @@ namespace api_sistema_de_chamado.Controllers
         }
 
         [Authorize(Roles = "Administrador")]
-        [HttpPut("responder")]
-        public async Task<ActionResult<Response<ChamadoLeituraDto>>> ResponderChamado([FromBody] ResponderChamadoDto dto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Response<ChamadoLeituraDto>>> ResponderChamado(int id, [FromBody] ResponderChamadoDto dto)
         {
-            var resultado = await _chamadoService.ResponderChamadoAsync(dto);
+            var resultado = await _chamadoService.ResponderChamadoAsync(id, dto);
             return Ok(resultado);
         }
 
         [Authorize(Roles = "Administrador")]
-        [HttpGet("todos")]
+        [HttpGet]
         public async Task<ActionResult<Response<List<ChamadoLeituraDto>>>> ListarTodosChamados()
         {
             var resultado = await _chamadoService.ListarTodosOsChamadosAsync();

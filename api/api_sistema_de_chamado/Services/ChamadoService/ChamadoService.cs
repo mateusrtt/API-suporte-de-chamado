@@ -90,13 +90,13 @@ namespace api_sistema_de_chamado.Services.ChamadoService
             return respostaServico;
         }
 
-        public async Task<Response<ChamadoLeituraDto>> ResponderChamadoAsync(ResponderChamadoDto dto)
+        public async Task<Response<ChamadoLeituraDto>> ResponderChamadoAsync(int id, ResponderChamadoDto dto)
         {
             var respostaServico = new Response<ChamadoLeituraDto>();
 
             try
             {
-                var chamado = await _chamadoRepository.ObterIdAsync(dto.Id);
+                var chamado = await _chamadoRepository.ObterIdAsync(id);
 
                 if (chamado == null)
                 {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api_sistema_de_chamado.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("suporte/v1/usuarios")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -17,7 +17,7 @@ namespace api_sistema_de_chamado.Controllers
             _authService = authService;
         }
 
-        [HttpPost("register-user")]
+        [HttpPost]
         public async Task<ActionResult> RegisterUser([FromBody] UsuarioCriacaoDto dto)
         {
             var resultado = await _authService.RegistrarUsuario(dto);
@@ -25,7 +25,7 @@ namespace api_sistema_de_chamado.Controllers
         }
 
         [Authorize(Roles = "Administrador")]
-        [HttpPost("register-admin")]
+        [HttpPost("admins")]
         public async Task<ActionResult> RegisterAdmin([FromBody] UsuarioCriacaoDto dto)
         {
             var resultado = await _authService.RegistrarAdmin(dto);
