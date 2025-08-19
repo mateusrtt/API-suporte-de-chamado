@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
+using api_sistema_de_chamado.Models;
 
 namespace api_sistema_de_chamado.Extensions
 {
@@ -14,7 +16,9 @@ namespace api_sistema_de_chamado.Extensions
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!)),
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!)
+                        ),
                         ValidateAudience = false,
                         ValidateIssuer = false,
                     };
@@ -24,33 +28,44 @@ namespace api_sistema_de_chamado.Extensions
                         OnChallenge = context =>
                         {
                             context.HandleResponse();
-                            context.Response.StatusCode = 401;
-                            context.Response.ContentType = "application/json";
-                            var json = """
-                            {
-                                "status": false,
-                                "mensagem": "Token inválido ou não autorizado.",
-                                "dados": null
-                            }
-                            """;
-                            return context.Response.WriteAsync(json);
+                            return WriteErrorResponse(context.Response,
+                                StatusCodes.Status401Unauthorized,
+                                "Token inválido ou não autorizado.");
                         },
                         OnForbidden = context =>
                         {
-                            context.Response.StatusCode = 403;
-                            context.Response.ContentType = "application/json";
-                            var json = """
-                            {
-                                "status": false,
-                                "mensagem": "Você não tem permissão para acessar esta funcionalidade.",
-                                "dados": null
-                            }
-                            """;
-                            return context.Response.WriteAsync(json);
+                            return WriteErrorResponse(context.Response,
+                                StatusCodes.Status403Forbidden,
+                                "Você não tem permissão para acessar esta funcionalidade.");
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            return WriteErrorResponse(context.Response,
+                                StatusCodes.Status400BadRequest,
+                                "Falha ao processar o token JWT.",
+                                context.Exception?.Message);
                         }
                     };
                 });
             return services;
+        }
+
+        private static Task WriteErrorResponse(HttpResponse response, int statusCode, string mensagem, object? dados = null)
+        {
+            if (response.HasStarted)
+                return Task.CompletedTask;
+            
+            response.StatusCode = statusCode;
+            response.ContentType = "application/json";
+
+            var result = new Response<object>
+            {
+                Status = false,
+                Mensagem = mensagem,
+                Dados = null
+            };
+
+            return response.WriteAsync(JsonSerializer.Serialize(result));
         }
     }
 }
