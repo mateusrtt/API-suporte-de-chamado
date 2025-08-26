@@ -7,6 +7,7 @@ using api_sistema_de_chamado.Services.OpenAiService;
 using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.EntityFrameworkCore;
 using api_sistema_de_chamado.Extensions;
+using api_sistema_de_chamado.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,8 @@ builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseGlobalExceptionMiddleware();
 
 if (app.Environment.IsDevelopment())
 {
