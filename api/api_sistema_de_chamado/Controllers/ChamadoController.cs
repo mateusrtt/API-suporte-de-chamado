@@ -21,35 +21,39 @@ namespace api_sistema_de_chamado.Controllers
 
         [Authorize(Roles = "Usuario")]
         [HttpPost]
-        public async Task<ActionResult<Response<ChamadoLeituraDto>>> FazerChamado([FromBody] FazerChamadoDto dto)
+        public async Task<ActionResult<ChamadoLeituraDto>> FazerChamado([FromBody] FazerChamadoDto dto)
         {
             int usuarioId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
             var resultado = await _chamadoService.FazerChamadoAsync(dto, usuarioId);
+            HttpContext.Items["MensagemSucesso"] = "Chamado criado com sucesso!";
             return Ok(resultado);
         }
 
         [Authorize(Roles = "Usuario")]
         [HttpGet("meus")]
-        public async Task<ActionResult<Response<List<ChamadoLeituraDto>>>> ListarMeusChamados()
+        public async Task<ActionResult<List<ChamadoLeituraDto>>> ListarMeusChamados()
         {
             int usuarioId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
             var resultado = await _chamadoService.ListarChamadosPorUsuarioAsync(usuarioId);
+            HttpContext.Items["MensagemSucesso"] = "Chamados carregados com sucesso!";
             return Ok(resultado);
         }
 
         [Authorize(Roles = "Administrador")]
         [HttpPut("{id}")]
-        public async Task<ActionResult<Response<ChamadoLeituraDto>>> ResponderChamado(int id, [FromBody] ResponderChamadoDto dto)
+        public async Task<ActionResult<ChamadoLeituraDto>> ResponderChamado(int id, [FromBody] ResponderChamadoDto dto)
         {
             var resultado = await _chamadoService.ResponderChamadoAsync(id, dto);
+            HttpContext.Items["MensagemSucesso"] = "Chamado respondido com sucesso!";
             return Ok(resultado);
         }
 
         [Authorize(Roles = "Administrador")]
         [HttpGet]
-        public async Task<ActionResult<Response<List<ChamadoLeituraDto>>>> ListarTodosChamados()
+        public async Task<ActionResult<List<ChamadoLeituraDto>>> ListarTodosChamados()
         {
             var resultado = await _chamadoService.ListarTodosOsChamadosAsync();
+            HttpContext.Items["MensagemSucesso"] = "Todos os chamados carregados com sucesso!";
             return Ok(resultado);
         }
     }

@@ -8,6 +8,7 @@ using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.EntityFrameworkCore;
 using api_sistema_de_chamado.Extensions;
 using api_sistema_de_chamado.Middlewares;
+using api_sistema_de_chamado.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,12 @@ builder.Services.AddCustomCors();
 builder.Services.AddDbContext<AppDbContext>(Options =>
 {
     Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+// Filtro de resposta de sucesso
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<FiltroRespostaSucesso>();
 });
 
 // Autenticação JWT

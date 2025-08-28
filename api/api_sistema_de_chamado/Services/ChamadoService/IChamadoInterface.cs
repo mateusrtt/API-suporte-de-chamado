@@ -5,9 +5,9 @@ namespace api_sistema_de_chamado.Services.ChamadoService
 {
     public interface IChamadoInterface
     {
-        Task<Response<ChamadoLeituraDto>> FazerChamadoAsync(FazerChamadoDto dto, int usuarioId);
-        Task<Response<List<ChamadoLeituraDto>>> ListarChamadosPorUsuarioAsync(int usuarioId);
-        Task<Response<ChamadoLeituraDto>> ResponderChamadoAsync(int id, ResponderChamadoDto dto);
-        Task<Response<List<ChamadoLeituraDto>>> ListarTodosOsChamadosAsync();
+        Task<ChamadoLeituraDto>FazerChamadoAsync(FazerChamadoDto dto, int usuarioId);
+        Task<List<ChamadoLeituraDto>> ListarChamadosPorUsuarioAsync(int usuarioId);
+        Task<ChamadoLeituraDto> ResponderChamadoAsync(int id, ResponderChamadoDto dto);
+        Task<List<ChamadoLeituraDto>> ListarTodosOsChamadosAsync();
     }
 }

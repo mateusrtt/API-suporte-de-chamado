@@ -21,6 +21,7 @@ namespace api_sistema_de_chamado.Controllers
         public async Task<ActionResult> RegisterUser([FromBody] UsuarioCriacaoDto dto)
         {
             var resultado = await _authService.RegistrarUsuario(dto);
+            HttpContext.Items["MensagemSucesso"] = "Usuário cadastrado com sucesso!";
             return Ok(resultado);
         }
 
@@ -29,14 +30,16 @@ namespace api_sistema_de_chamado.Controllers
         public async Task<ActionResult> RegisterAdmin([FromBody] UsuarioCriacaoDto dto)
         {
             var resultado = await _authService.RegistrarAdmin(dto);
+            HttpContext.Items["MensagemSucesso"] = "Administrador cadastrado com sucesso!";
             return Ok(resultado);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login(UsuarioLoginDto usuarioLogin)
         {
-            var resposta = await _authService.Login(usuarioLogin);
-            return Ok(resposta);
+            var resultado = await _authService.Login(usuarioLogin);
+            HttpContext.Items["MensagemSucesso"] = "Login realizado com sucesso!";
+            return Ok(resultado);
         }
     }
 }
