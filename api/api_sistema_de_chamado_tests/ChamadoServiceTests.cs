@@ -42,10 +42,10 @@ namespace api_sistema_de_chamado_tests
             var result = await _service.FazerChamadoAsync(dto, usuarioId);
 
             // Assert
-            Assert.True(result.Status);
-            Assert.Equal("Chamado criado com sucesso!", result.Mensagem);
-            Assert.NotNull(result.Dados);
-            Assert.Equal(dto.Descricao, result.Dados!.Descricao);
+            Assert.NotNull(result);
+            Assert.Equal(dto.Descricao, result.Descricao);
+            Assert.Equal(usuarioId, result.UsuarioId);
+            Assert.Equal(PrioridadeEnum.Alta, result.Prioridade);
         }
 
         [Fact]
@@ -58,12 +58,9 @@ namespace api_sistema_de_chamado_tests
             _chamadoRepositoryMock.Setup(r => r.ObterIdAsync(chamadoId))
                                   .ReturnsAsync((ChamadoModel?)null);
 
-            // Act
-            var result = await _service.ResponderChamadoAsync(chamadoId, dto);
-
-            // Assert
-            Assert.False(result.Status);
-            Assert.Equal("Chamado não encontrado.", result.Mensagem);
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _service.ResponderChamadoAsync(chamadoId, dto));
+            Assert.Equal("Chamado não encontrado.", ex.Message);
         }
 
         [Fact]
@@ -85,11 +82,9 @@ namespace api_sistema_de_chamado_tests
             var result = await _service.ResponderChamadoAsync(chamadoId, dto);
 
             // Assert
-            Assert.True(result.Status);
-            Assert.Equal("Chamado respondido com sucesso!", result.Mensagem);
-            Assert.NotNull(result.Dados);
-            Assert.Equal(dto.Resposta, result.Dados!.Resposta);
-            Assert.Equal(StatusChamadoEnum.Respondido, result.Dados!.Status);
+            Assert.NotNull(result);
+            Assert.Equal(dto.Resposta, result.Resposta);
+            Assert.Equal(StatusChamadoEnum.Respondido, result.Status);
         }
 
         [Theory]
@@ -111,10 +106,9 @@ namespace api_sistema_de_chamado_tests
             var result = await _service.ListarChamadosPorUsuarioAsync(usuarioId);
 
             // Assert
-            Assert.True(result.Status);
-            Assert.NotNull(result.Dados);
-            Assert.Equal(2, result.Dados!.Count);
-            Assert.All(result.Dados, c => Assert.Equal(usuarioId, c.UsuarioId));
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.All(result, c => Assert.Equal(usuarioId, c.UsuarioId));
         }
 
         [Fact]
@@ -134,9 +128,8 @@ namespace api_sistema_de_chamado_tests
             var result = await _service.ListarTodosOsChamadosAsync();
 
             // Assert
-            Assert.True(result.Status);
-            Assert.NotNull(result.Dados);
-            Assert.Equal(2, result.Dados!.Count);
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using api_sistema_de_chamado.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace api_sistema_de_chamado.Filters
@@ -13,7 +14,7 @@ namespace api_sistema_de_chamado.Filters
                     ? context.HttpContext.Items["MensagemSucesso"]?.ToString()
                     : "Operação realizada com sucesso.";
 
-                var envelopado = new
+                var envelopado = new Response<object>
                 {
                     Dados = objectResult.Value,
                     Mensagem = mensagem,

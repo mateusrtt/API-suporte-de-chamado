@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using api_sistema_de_chamado.Extensions;
 using api_sistema_de_chamado.Middlewares;
 using api_sistema_de_chamado.Filters;
+using api_sistema_de_chamado.Repositories.AcessoLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +20,13 @@ builder.Services.AddEndpointsApiExplorer();
 // Repositórios e serviços
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
+builder.Services.AddScoped<IAcessoLogRepository, AcessoLogRepository>();
 builder.Services.AddScoped<IAuthInterface, AuthService>();
 builder.Services.AddScoped<ISenhaInterface, SenhaService>();
 builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
 builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
 builder.Services.AddCustomCors();
+builder.Services.AddHttpContextAccessor();
 
 // Banco de dados
 builder.Services.AddDbContext<AppDbContext>(Options =>
@@ -57,5 +60,7 @@ app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAcessoLogs();
+app.UseLoginLogs();
 app.MapControllers();
 app.Run();

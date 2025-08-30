@@ -4,6 +4,7 @@ using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Repositories.Usuario;
 using api_sistema_de_chamado.Services.AuthService;
 using api_sistema_de_chamado.Services.SenhaService;
+using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace api_sistema_de_chamado_tests
@@ -13,13 +14,22 @@ namespace api_sistema_de_chamado_tests
 
         private readonly Mock<IUsuarioRepository> _usuarioRepoMock;
         private readonly Mock<ISenhaInterface> _senhaMock;
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _usuarioRepoMock = new Mock<IUsuarioRepository>();
             _senhaMock = new Mock<ISenhaInterface>();
-            _authService = new AuthService(_usuarioRepoMock.Object, _senhaMock.Object);
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+
+            _httpContextAccessorMock.Setup(a => a.HttpContext).Returns(new DefaultHttpContext());
+
+            _authService = new AuthService(
+              _usuarioRepoMock.Object,
+              _senhaMock.Object,
+              _httpContextAccessorMock.Object
+          );
         }
 
         [Fact]
@@ -50,8 +60,8 @@ namespace api_sistema_de_chamado_tests
             var resultado = await _authService.RegistrarUsuario(dto);
 
             // Assert
-            Assert.True(resultado.Status); // Deve retornar sucesso
-            Assert.Equal("Usuário cadastrado com sucesso!", resultado.Mensagem);
+            Assert.Equal(dto.Nome, resultado.Nome);
+            Assert.Equal(dto.Email, resultado.Email);
         }
 
         [Fact]
@@ -68,12 +78,9 @@ namespace api_sistema_de_chamado_tests
 
             _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(false);
 
-            // Act
-            var resultado = await _authService.RegistrarUsuario(dto);
-
-            // Assert
-            Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Email/usuário já cadastrados!", resultado.Mensagem);
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.RegistrarUsuario(dto));
+            Assert.Equal("Email/usuário já cadastrados!", ex.Message);
         }
 
         [Fact]
@@ -86,46 +93,30 @@ namespace api_sistema_de_chamado_tests
                 Senha = "senha"
             };
 
-            var usuario = new UsuariosModel(
-                "Teste",
-                dto.Email,
-                CargoEnum.Usuario,
-                new byte[1],
-                new byte[1]
-            );
+            var usuario = new UsuariosModel("Teste", dto.Email, CargoEnum.Usuario, new byte[1], new byte[1]);
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
-
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(true);
-
             _senhaMock.Setup(x => x.CriarToken(usuario)).Returns("fake-jwt-token");
 
             // Act
             var resultado = await _authService.Login(dto);
 
             // Assert
-            Assert.True(resultado.Status); 
-            Assert.Equal("fake-jwt-token", resultado.Dados); // Token retornado
+            Assert.Equal("fake-jwt-token", resultado);
         }
 
         [Fact]
         public async Task Login_Deve_Falhar_Se_Usuario_Nao_Encontrado()
         {
             // Arrange
-            var dto = new UsuarioLoginDto
-            {
-                Email = "teste@email.com",
-                Senha = "senha"
-            };
+            var dto = new UsuarioLoginDto { Email = "teste@email.com", Senha = "senha" };
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync((UsuariosModel?)null);
 
-            // Act
-            var resultado = await _authService.Login(dto);
-
-            // Assert
-            Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Email invalido!", resultado.Mensagem);
+            // Act Assert
+            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.Login(dto));
+            Assert.Equal("Email inválido!", ex.Message);
         }
 
         [Fact]
@@ -147,15 +138,11 @@ namespace api_sistema_de_chamado_tests
             );
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
-
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(false);
 
-            // Act
-            var resultado = await _authService.Login(dto);
-
-            // Assert
-            Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Senha invalida!", resultado.Mensagem);
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.Login(dto));
+            Assert.Equal("Senha inválida!", ex.Message);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace api_sistema_de_chamado.Data
 
         public DbSet<UsuariosModel> Usuario { get; set; }
         public DbSet<ChamadoModel> Chamado { get; set; }
+        public DbSet<AcessoLogModel> AcessoLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,6 +21,12 @@ namespace api_sistema_de_chamado.Data
                 .WithMany(u => u.Chamados)
                 .HasForeignKey(c => c.UsuarioId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AcessoLogModel>()
+               .HasOne<UsuariosModel>()
+               .WithMany()
+               .HasForeignKey(l => l.UsuarioId)
+               .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

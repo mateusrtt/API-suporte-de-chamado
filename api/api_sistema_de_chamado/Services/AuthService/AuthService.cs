@@ -11,11 +11,13 @@ namespace api_sistema_de_chamado.Services.AuthService
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ISenhaInterface _senhaInterface;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(IUsuarioRepository usuarioRepository, ISenhaInterface senhaInterface)
+        public AuthService(IUsuarioRepository usuarioRepository, ISenhaInterface senhaInterface, IHttpContextAccessor httpContextAccessor)
         {
             _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
+            _httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -55,15 +57,23 @@ namespace api_sistema_de_chamado.Services.AuthService
 
         public async Task<String> Login(UsuarioLoginDto usuarioLogin) 
         {
-                var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email);
+         var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email);
 
-                if (usuario == null)
-                    throw new ApplicationException("Email inválido!");
+         if (usuario == null)
+            throw new ApplicationException("Email inválido!");
 
-                if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
-                    throw new ApplicationException("Senha inválida!");
+         if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
+            throw new ApplicationException("Senha inválida!");
 
-                return _senhaInterface.CriarToken(usuario);
+            var token = _senhaInterface.CriarToken(usuario);
+
+            _httpContextAccessor.HttpContext!.Items["LoginUsuario"] = new LoginResultadoDto
+            {
+                UsuarioId = usuario.Id,
+                Nome = usuario.Nome,
+                Email = usuario.Email
+            };
+            return token;
         }
     }
 }
