@@ -1,4 +1,5 @@
-﻿using api_sistema_de_chamado.Models;
+﻿using api_sistema_de_chamado.Dtos;
+using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Repositories.AcessoLog;
 
 namespace api_sistema_de_chamado.Middlewares
@@ -14,42 +15,35 @@ namespace api_sistema_de_chamado.Middlewares
 
         public async Task InvokeAsync(HttpContext context, IAcessoLogRepository acessoLogRepository)
         {
+            if (context.User.Identity?.IsAuthenticated == true && !context.Items.ContainsKey("UsuarioLogAcesso"))
+            {
+                context.Items["UsuarioLogAcesso"] = new UsuarioLogAcessoDto
+                {
+                    UsuarioId = int.Parse(context.User.FindFirst("Id")!.Value),
+                    Nome = context.User.FindFirst("Username")?.Value ?? string.Empty,
+                    Email = context.User.FindFirst("Email")?.Value ?? string.Empty
+                };
+            }
+
+            context.Response.OnStarting(async () =>
+            {
+                if (context.Items["UsuarioLogAcesso"] is UsuarioLogAcessoDto usuarioLog)
+                {
+                    var log = new AcessoLogModel(
+                        usuarioLog.UsuarioId,
+                        usuarioLog.Nome,
+                        usuarioLog.Email,
+                        context.Connection.RemoteIpAddress?.ToString() ?? "IP desconhecido",
+                        context.Request.Method,
+                        context.Request.Path
+                    );
+
+                    await acessoLogRepository.AdicionarAsync(log);
+                    await acessoLogRepository.SalvarAsync();
+                }
+            });
+
             await _next(context);
-
-            try
-            {
-                // Ignora rotas internas
-                var path = context.Request.Path.ToString().ToLower();
-                if (path.StartsWith("/swagger") ||
-                    path.StartsWith("/health") ||
-                    path.StartsWith("/metrics") ||
-                    path.Equals("/suporte/v1/usuarios/login") ||
-                    (path.Equals("/suporte/v1/usuarios") && context.Request.Method == "POST") ||   
-                    (path.Equals("/suporte/v1/usuarios/admins") && context.Request.Method == "POST")) 
-                    return;
-
-                int? usuarioId = context.User.Identity?.IsAuthenticated == true? int.Parse(context.User.FindFirst("Id")!.Value): null;
-                string nome = context.User.FindFirst("Username")?.Value ?? string.Empty; 
-                string email = context.User.FindFirst("Email")?.Value ?? string.Empty;
-
-                // Cria o log
-                var log = new AcessoLogModel(
-                    usuarioId,
-                    nome,
-                    email,
-                    context.Connection.RemoteIpAddress?.ToString() ?? "IP desconhecido",
-                    context.Request.Method,
-                    context.Request.Path
-                );
-
-                // Adiciona e salva usando o repository
-                await acessoLogRepository.AdicionarAsync(log);
-                await acessoLogRepository.SalvarAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro ao salvar log: {ex.Message}");
-            }
         }
     }
 

@@ -56,16 +56,12 @@ namespace api_sistema_de_chamado.Services.AuthService
                 await _usuarioRepository.AdicionarAsync(usuario);
                 await _usuarioRepository.SalvarAsync();
 
-                var log = new AcessoLogModel(
-                    usuario.Id,
-                    usuario.Nome,
-                    usuario.Email,
-                    _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "IP desconhecido","POST",
-                    _httpContextAccessor.HttpContext?.Request.Path ?? "/suporte/v1/usuarios"
-                );
-
-                await _acessoLogRepository.AdicionarAsync(log);
-                await _acessoLogRepository.SalvarAsync();
+                _httpContextAccessor.HttpContext!.Items["UsuarioLogAcesso"] = new UsuarioLogAcessoDto
+                {
+                    UsuarioId = usuario.Id,
+                    Nome = usuario.Nome,
+                    Email = usuario.Email
+                };
 
             return new UsuarioCriacaoDto();
         }
@@ -82,7 +78,7 @@ namespace api_sistema_de_chamado.Services.AuthService
 
             var token = _senhaInterface.CriarToken(usuario);
 
-            _httpContextAccessor.HttpContext!.Items["LoginUsuario"] = new LoginResultadoDto
+            _httpContextAccessor.HttpContext!.Items["UsuarioLogAcesso"] = new UsuarioLogAcessoDto
             {
                 UsuarioId = usuario.Id,
                 Nome = usuario.Nome,

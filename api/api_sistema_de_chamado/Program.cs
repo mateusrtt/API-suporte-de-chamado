@@ -61,6 +61,5 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAcessoLogs();
-app.UseLoginLogs();
 app.MapControllers();
 app.Run();

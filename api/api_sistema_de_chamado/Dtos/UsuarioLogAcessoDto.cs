@@ -1,6 +1,6 @@
 ﻿namespace api_sistema_de_chamado.Dtos
 {
-    public class LoginResultadoDto
+    public class UsuarioLogAcessoDto
     {
         public int UsuarioId { get; set; }
         public string Nome { get; set; } = string.Empty;
