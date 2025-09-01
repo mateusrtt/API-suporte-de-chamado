@@ -1,10 +1,12 @@
 using api_sistema_de_chamado.Dtos;
 using api_sistema_de_chamado.Enum;
 using api_sistema_de_chamado.Models;
+using api_sistema_de_chamado.Repositories.AcessoLog;
 using api_sistema_de_chamado.Repositories.Usuario;
 using api_sistema_de_chamado.Services.AuthService;
 using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace api_sistema_de_chamado_tests
@@ -15,6 +17,7 @@ namespace api_sistema_de_chamado_tests
         private readonly Mock<IUsuarioRepository> _usuarioRepoMock;
         private readonly Mock<ISenhaInterface> _senhaMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
+        private readonly Mock<IAcessoLogRepository> _acessoLogRepoMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
@@ -22,13 +25,20 @@ namespace api_sistema_de_chamado_tests
             _usuarioRepoMock = new Mock<IUsuarioRepository>();
             _senhaMock = new Mock<ISenhaInterface>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _acessoLogRepoMock = new Mock<IAcessoLogRepository>();
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.RequestServices = new ServiceCollection()
+                .AddSingleton(_acessoLogRepoMock.Object)
+                .BuildServiceProvider();
 
             _httpContextAccessorMock.Setup(a => a.HttpContext).Returns(new DefaultHttpContext());
 
             _authService = new AuthService(
               _usuarioRepoMock.Object,
               _senhaMock.Object,
-              _httpContextAccessorMock.Object
+              _httpContextAccessorMock.Object,
+              _acessoLogRepoMock.Object
           );
         }
 
@@ -41,7 +51,8 @@ namespace api_sistema_de_chamado_tests
                 Nome = "Mateus",
                 Email = "mateus@email.com",
                 Senha = "123456",
-                ConfirmarSenha = "123456"
+                ConfirmarSenha = "123456",
+                AceitouPoliticaPrivacidade = true
             };
 
             _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(true);
@@ -56,12 +67,19 @@ namespace api_sistema_de_chamado_tests
             _usuarioRepoMock.Setup(x => x.AdicionarAsync(It.IsAny<UsuariosModel>())).Returns(Task.CompletedTask);
             _usuarioRepoMock.Setup(x => x.SalvarAsync()).Returns(Task.CompletedTask);
 
+            _acessoLogRepoMock.Setup(x => x.AdicionarAsync(It.IsAny<AcessoLogModel>()))
+                             .ReturnsAsync((AcessoLogModel log) => log); // retorna o próprio log que foi passado
+
+            _acessoLogRepoMock.Setup(x => x.SalvarAsync())
+                              .ReturnsAsync(true);
+
             // Act
             var resultado = await _authService.RegistrarUsuario(dto);
 
             // Assert
-            Assert.Equal(dto.Nome, resultado.Nome);
-            Assert.Equal(dto.Email, resultado.Email);
+            Assert.NotNull(resultado);
+            Assert.Equal(string.Empty, resultado.Nome);
+            Assert.Equal(string.Empty, resultado.Email);
         }
 
         [Fact]
@@ -73,7 +91,8 @@ namespace api_sistema_de_chamado_tests
                 Nome = "João",
                 Email = "joao@email.com",
                 Senha = "123456",
-                ConfirmarSenha = "123456"
+                ConfirmarSenha = "123456",
+                AceitouPoliticaPrivacidade = true
             };
 
             _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(false);
@@ -93,7 +112,7 @@ namespace api_sistema_de_chamado_tests
                 Senha = "senha"
             };
 
-            var usuario = new UsuariosModel("Teste", dto.Email, CargoEnum.Usuario, new byte[1], new byte[1]);
+            var usuario = new UsuariosModel("Teste", dto.Email, CargoEnum.Usuario, new byte[1], new byte[1], true);
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(true);
@@ -134,7 +153,8 @@ namespace api_sistema_de_chamado_tests
                 dto.Email,
                 CargoEnum.Usuario,
                 new byte[1],  
-                new byte[1]
+                new byte[1],
+                true
             );
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);

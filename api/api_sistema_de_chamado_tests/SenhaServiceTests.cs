@@ -93,7 +93,8 @@ namespace api_sistema_de_chamado_tests
                 email,
                 cargo,
                 senhaHash: new byte[1],   
-                senhaSalt: new byte[1]    
+                senhaSalt: new byte[1],
+                true
             );
 
             var idProperty = typeof(UsuariosModel).GetProperty("Id");

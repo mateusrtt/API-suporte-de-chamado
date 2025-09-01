@@ -4,6 +4,7 @@ using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Services.SenhaService;
 using api_sistema_de_chamado.Repositories.Usuario;
 using api_sistema_de_chamado.Enum;
+using api_sistema_de_chamado.Repositories.AcessoLog;
 
 namespace api_sistema_de_chamado.Services.AuthService
 {
@@ -12,12 +13,14 @@ namespace api_sistema_de_chamado.Services.AuthService
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ISenhaInterface _senhaInterface;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAcessoLogRepository _acessoLogRepository;
 
-        public AuthService(IUsuarioRepository usuarioRepository, ISenhaInterface senhaInterface, IHttpContextAccessor httpContextAccessor)
+        public AuthService(IUsuarioRepository usuarioRepository, ISenhaInterface senhaInterface, IHttpContextAccessor httpContextAccessor, IAcessoLogRepository acessoLogRepository)
         {
             _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
             _httpContextAccessor = httpContextAccessor;
+            _acessoLogRepository = acessoLogRepository;
         }
 
 
@@ -46,13 +49,25 @@ namespace api_sistema_de_chamado.Services.AuthService
                     usuarioRegistro.Email,
                     cargo,
                     senhaHash,
-                    senhaSalt
+                    senhaSalt,
+                    usuarioRegistro.AceitouPoliticaPrivacidade
                 );
 
                 await _usuarioRepository.AdicionarAsync(usuario);
                 await _usuarioRepository.SalvarAsync();
 
-                return usuarioRegistro;
+                var log = new AcessoLogModel(
+                    usuario.Id,
+                    usuario.Nome,
+                    usuario.Email,
+                    _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "IP desconhecido","POST",
+                    _httpContextAccessor.HttpContext?.Request.Path ?? "/suporte/v1/usuarios"
+                );
+
+                await _acessoLogRepository.AdicionarAsync(log);
+                await _acessoLogRepository.SalvarAsync();
+
+            return new UsuarioCriacaoDto();
         }
 
         public async Task<String> Login(UsuarioLoginDto usuarioLogin) 

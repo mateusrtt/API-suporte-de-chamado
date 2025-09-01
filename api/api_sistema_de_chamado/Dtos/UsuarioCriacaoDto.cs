@@ -12,10 +12,11 @@ namespace api_sistema_de_chamado.Dtos
         [Required(ErrorMessage = "O campo email é obrigatório")]
         [EmailAddress(ErrorMessage = "Email inválido!")]
         public string Email { get; set; } = string.Empty;
+        public bool AceitouPoliticaPrivacidade { get; set; }
         [Required(ErrorMessage = "O campo senha é obrigatório")]
         [StringLength(10, ErrorMessage = "A senha deve ter no máximo 10 caracteres")]
         public string Senha { get; set; } = string.Empty;
         [Compare("Senha", ErrorMessage = "Senha nâo coincidem!")]
-        public string? ConfirmarSenha { get; set; }
+        public string? ConfirmarSenha { get; set; } = string.Empty;
     }
 }

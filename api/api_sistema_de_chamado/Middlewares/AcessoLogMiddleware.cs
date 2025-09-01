@@ -20,7 +20,12 @@ namespace api_sistema_de_chamado.Middlewares
             {
                 // Ignora rotas internas
                 var path = context.Request.Path.ToString().ToLower();
-                if (path.StartsWith("/swagger") || path.StartsWith("/health") || path.StartsWith("/metrics") || path.Equals("/suporte/v1/usuarios/login"))
+                if (path.StartsWith("/swagger") ||
+                    path.StartsWith("/health") ||
+                    path.StartsWith("/metrics") ||
+                    path.Equals("/suporte/v1/usuarios/login") ||
+                    (path.Equals("/suporte/v1/usuarios") && context.Request.Method == "POST") ||   
+                    (path.Equals("/suporte/v1/usuarios/admins") && context.Request.Method == "POST")) 
                     return;
 
                 int? usuarioId = context.User.Identity?.IsAuthenticated == true? int.Parse(context.User.FindFirst("Id")!.Value): null;

@@ -105,6 +105,9 @@ namespace api_sistema_de_chamado.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AceitouPoliticaPrivacidade")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Cargo")
                         .HasColumnType("int");
 
