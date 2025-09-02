@@ -10,6 +10,7 @@ using api_sistema_de_chamado.Extensions;
 using api_sistema_de_chamado.Middlewares;
 using api_sistema_de_chamado.Filters;
 using api_sistema_de_chamado.Repositories.AcessoLog;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,11 @@ builder.Services.AddDbContext<AppDbContext>(Options =>
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<FiltroRespostaSucesso>();
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
 });
 
 // Autenticação JWT

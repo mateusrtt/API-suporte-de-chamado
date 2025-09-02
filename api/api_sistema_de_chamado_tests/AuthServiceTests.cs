@@ -95,11 +95,28 @@ namespace api_sistema_de_chamado_tests
                 AceitouPoliticaPrivacidade = true
             };
 
-            _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(false);
+            var usuarioExistente = new UsuariosModel(
+                "João",
+                "joao@email.com",
+                CargoEnum.Usuario,
+                new byte[] { 1, 2, 3 },   // hash dummy
+                new byte[] { 4, 5, 6 },   // salt dummy
+                true
+            );
+
+            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email))
+                       .ReturnsAsync(new UsuariosModel(
+                           "João",
+                           "joao@email.com",
+                           CargoEnum.Usuario,
+                           new byte[] { 1, 2, 3 },
+                           new byte[] { 4, 5, 6 },
+                           true
+                       ));
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.RegistrarUsuario(dto));
-            Assert.Equal("Email/usuário já cadastrados!", ex.Message);
+            Assert.Equal("Email já cadastrado.", ex.Message);
         }
 
         [Fact]

@@ -5,6 +5,7 @@ using api_sistema_de_chamado.Services.SenhaService;
 using api_sistema_de_chamado.Repositories.Usuario;
 using api_sistema_de_chamado.Enum;
 using api_sistema_de_chamado.Repositories.AcessoLog;
+using System.Text.RegularExpressions;
 
 namespace api_sistema_de_chamado.Services.AuthService
 {
@@ -36,17 +37,21 @@ namespace api_sistema_de_chamado.Services.AuthService
 
         public async Task<UsuarioCriacaoDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo)
         {
-                bool usuarioDisponivel = await _usuarioRepository.ExisteUsuarioOuEmailAsync(
-                     usuarioRegistro.Nome, usuarioRegistro.Email);
+            var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(usuarioRegistro.Email.ToLower());
+            if (usuarioExistente != null)
+                throw new ApplicationException("Email já cadastrado.");
 
-                if (!usuarioDisponivel)
-                    throw new ApplicationException("Email/usuário já cadastrados!");
+            if (string.IsNullOrWhiteSpace(usuarioRegistro.Senha) || !Regex.IsMatch(usuarioRegistro.Senha, @"^.{5,10}$"))
+                throw new ApplicationException("Senha inválida: deve ter entre 5 e 10 caracteres");
 
-                _senhaInterface.CriarSenhaHash(usuarioRegistro.Senha, out byte[] senhaHash, out byte[] senhaSalt);
+            if (usuarioRegistro.Senha != usuarioRegistro.ConfirmarSenha)
+                throw new ApplicationException("Senha e confirmação não coincidem");
+
+            _senhaInterface.CriarSenhaHash(usuarioRegistro.Senha, out byte[] senhaHash, out byte[] senhaSalt);
 
                 UsuariosModel usuario = new UsuariosModel(
                     usuarioRegistro.Nome,
-                    usuarioRegistro.Email,
+                    usuarioRegistro.Email.ToLower(),
                     cargo,
                     senhaHash,
                     senhaSalt,
@@ -68,13 +73,12 @@ namespace api_sistema_de_chamado.Services.AuthService
 
         public async Task<String> Login(UsuarioLoginDto usuarioLogin) 
         {
-         var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email);
 
+         var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email.ToLower());
          if (usuario == null)
             throw new ApplicationException("Email inválido!");
 
-         if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
-            throw new ApplicationException("Senha inválida!");
+            usuario.ValidarSenha(usuarioLogin.Senha, _senhaInterface);
 
             var token = _senhaInterface.CriarToken(usuario);
 
