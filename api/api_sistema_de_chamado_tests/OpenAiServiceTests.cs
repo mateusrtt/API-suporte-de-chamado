@@ -1,4 +1,5 @@
-﻿using api_sistema_de_chamado.Services.OpenAiService;
+﻿using api_sistema_de_chamado.Enums;
+using api_sistema_de_chamado.Services.OpenAiService;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
@@ -68,7 +69,7 @@ namespace api_sistema_de_chamado_tests
         }
 
         [Fact]
-        public async Task ObterPrioridadePorDescricaoAsync_DeveLancarErroDeConexao_SemInternet()
+        public async Task ObterPrioridadePorDescricaoAsync_SemInternet_DeveRetornarAnalisando()
         {
             // Arrange
             var handlerMock = new Mock<HttpMessageHandler>();
@@ -86,15 +87,15 @@ namespace api_sistema_de_chamado_tests
 
             var service = new OpenAiService(httpClient, configMock.Object);
 
-            // Act & Assert
-            var ex = await Assert.ThrowsAsync<Exception>(() =>
-                service.ObterPrioridadePorDescricaoAsync("Teste"));
+            // Act
+            int prioridade = await service.ObterPrioridadePorDescricaoAsync("Teste");
 
-            Assert.Equal("Sem conexão com a internet. Verifique sua conexão para enviar o chamado.", ex.Message);
+            // Assert
+            Assert.Equal((int)PrioridadeEnum.Analisando, prioridade);
         }
 
         [Fact]
-        public async Task ObterPrioridadePorDescricaoAsync_DeveLancarErroDeTimeout_QuandoARequisicaoExpira()
+        public async Task ObterPrioridadePorDescricaoAsync_Timeout_DeveRetornarAnalisando()
         {
             // Arrange
             var handlerMock = new Mock<HttpMessageHandler>();
@@ -112,15 +113,15 @@ namespace api_sistema_de_chamado_tests
 
             var service = new OpenAiService(httpClient, configMock.Object);
 
-            // Act & Assert
-            var ex = await Assert.ThrowsAsync<Exception>(() =>
-                service.ObterPrioridadePorDescricaoAsync("Teste"));
+            // Act
+            int prioridade = await service.ObterPrioridadePorDescricaoAsync("Teste");
 
-            Assert.Equal("A requisição expirou. Verifique sua conexão com a internet.", ex.Message);
+            // Assert
+            Assert.Equal((int)PrioridadeEnum.Analisando, prioridade);
         }
 
         [Fact]
-        public async Task ObterPrioridadePorDescricaoAsync_DeveLancarErro_QuandoRespostaForInvalida()
+        public async Task ObterPrioridadePorDescricaoAsync_RespostaInvalida_DeveRetornarAnalisando()
         {
             // Arrange
             var fakeJson = @"
@@ -147,11 +148,11 @@ namespace api_sistema_de_chamado_tests
 
             var service = new OpenAiService(httpClient, configMock.Object);
 
-            // Act & Assert
-            var ex = await Assert.ThrowsAsync<Exception>(() =>
-                service.ObterPrioridadePorDescricaoAsync("Teste"));
+            // Act
+            int prioridade = await service.ObterPrioridadePorDescricaoAsync("Teste");
 
-            Assert.Equal("Não foi possível classificar o chamado automaticamente. Tente novamente mais tarde.", ex.Message);
+            // Assert
+            Assert.Equal((int)PrioridadeEnum.Analisando, prioridade);
         }
     }
 }

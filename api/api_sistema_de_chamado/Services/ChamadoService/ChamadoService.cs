@@ -1,5 +1,5 @@
 ﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Enum;
+using api_sistema_de_chamado.Enums;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Repositories.Chamado;
 using api_sistema_de_chamado.Services.OpenAiService;
@@ -23,8 +23,8 @@ namespace api_sistema_de_chamado.Services.ChamadoService
 
             int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricaoAsync(dto.Descricao);
 
-            if (!System.Enum.IsDefined(typeof(PrioridadeEnum), prioridadeNumero))
-                throw new ApplicationException("Prioridade inválida retornada pela IA.");
+            if (!Enum.IsDefined(typeof(PrioridadeEnum), prioridadeNumero))
+                prioridadeNumero = (int)PrioridadeEnum.Analisando;
 
             ChamadoModel chamado = new ChamadoModel(
                  dto.Descricao,

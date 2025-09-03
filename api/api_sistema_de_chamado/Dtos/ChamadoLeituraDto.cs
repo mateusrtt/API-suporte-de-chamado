@@ -1,4 +1,4 @@
-﻿using api_sistema_de_chamado.Enum;
+﻿using api_sistema_de_chamado.Enums;
 
 namespace api_sistema_de_chamado.Dtos
 {

@@ -1,4 +1,5 @@
 ﻿using api_sistema_de_chamado.Dtos;
+using api_sistema_de_chamado.Enums;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace api_sistema_de_chamado.Controllers
         [HttpPost]
         public async Task<ActionResult> RegisterUser([FromBody] UsuarioCriacaoDto dto)
         {
-            var resultado = await _authService.RegistrarUsuario(dto);
+            var resultado = await _authService.Registrar(dto, CargoEnum.Usuario);
             HttpContext.Items["MensagemSucesso"] = "Usuário cadastrado com sucesso!";
             return Ok(resultado);
         }
@@ -29,7 +30,7 @@ namespace api_sistema_de_chamado.Controllers
         [HttpPost("admins")]
         public async Task<ActionResult> RegisterAdmin([FromBody] UsuarioCriacaoDto dto)
         {
-            var resultado = await _authService.RegistrarAdmin(dto);
+            var resultado = await _authService.Registrar(dto, CargoEnum.Administrador);
             HttpContext.Items["MensagemSucesso"] = "Administrador cadastrado com sucesso!";
             return Ok(resultado);
         }

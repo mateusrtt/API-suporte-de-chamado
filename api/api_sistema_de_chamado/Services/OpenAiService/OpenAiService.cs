@@ -1,7 +1,7 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text;
 using System.Net.Http.Headers;
+using api_sistema_de_chamado.Enums;
 
 namespace api_sistema_de_chamado.Services.OpenAiService
 {
@@ -20,9 +20,11 @@ namespace api_sistema_de_chamado.Services.OpenAiService
         {
             var apiKey = _configuration["OpenAI:ApiKey"];
             if (string.IsNullOrEmpty(apiKey))
-                throw new Exception("Chave da API OpenAI não configurada.");
+                return (int)PrioridadeEnum.Analisando;
 
-            var prompt = $"Classifique a prioridade deste chamado como 1 (Baixa), 2 (Média) ou 3 (Alta) baseada na descrição: \"{descricao}\". Responda apenas com o número sem texto extra ou explicações.";
+            var prompt = $"Classifique a prioridade deste chamado como 1 (Baixa), 2 (Média) ou 3 (Alta) baseada na descrição: \"{descricao}\". " +
+                $"Se a descrição for confusa, sem sentido, números aleatórios, caracteres aleatórios ou não puder ser classificada com confiança, responda 4 (Analisando). " +
+                $"Responda sempre apenas com o número sem texto extra ou explicações.";
 
             var requestBody = new
             {
@@ -45,9 +47,9 @@ namespace api_sistema_de_chamado.Services.OpenAiService
             var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception($"Erro da OpenAI: {response.StatusCode}");
+                    return (int)PrioridadeEnum.Analisando;
 
-            var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync();
 
             using var doc = JsonDocument.Parse(json);
             var resposta = doc.RootElement
@@ -58,22 +60,14 @@ namespace api_sistema_de_chamado.Services.OpenAiService
 
             var respostaLimpa = new string(resposta?.Where(char.IsDigit).ToArray() ?? Array.Empty<char>());
 
-            if (int.TryParse(respostaLimpa, out int prioridade) && prioridade >= 1 && prioridade <= 3)
-                return prioridade;
+             if (int.TryParse(respostaLimpa, out int prioridade) && Enum.IsDefined(typeof(PrioridadeEnum), prioridade))
+                 return prioridade;
 
-                throw new Exception("Não foi possível classificar o chamado automaticamente. Tente novamente mais tarde.");
+                return (int)PrioridadeEnum.Analisando;
             }
-            catch (HttpRequestException)
+            catch 
             {
-                throw new Exception("Sem conexão com a internet. Verifique sua conexão para enviar o chamado.");
-            }
-            catch (TaskCanceledException)
-            {
-                throw new Exception("A requisição expirou. Verifique sua conexão com a internet.");
-            }
-            catch (Exception)
-            {
-                throw;
+                return (int)PrioridadeEnum.Analisando;
             }
         }
     }

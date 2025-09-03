@@ -1,5 +1,5 @@
 using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Enum;
+using api_sistema_de_chamado.Enums;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Repositories.AcessoLog;
 using api_sistema_de_chamado.Repositories.Usuario;
@@ -74,7 +74,7 @@ namespace api_sistema_de_chamado_tests
                               .ReturnsAsync(true);
 
             // Act
-            var resultado = await _authService.RegistrarUsuario(dto);
+            var resultado = await _authService.Registrar(dto, CargoEnum.Usuario);
 
             // Assert
             Assert.NotNull(resultado);
@@ -115,7 +115,7 @@ namespace api_sistema_de_chamado_tests
                        ));
 
             // Act & Assert
-            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.RegistrarUsuario(dto));
+            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.Registrar(dto, CargoEnum.Usuario));
             Assert.Equal("Email já cadastrado.", ex.Message);
         }
 

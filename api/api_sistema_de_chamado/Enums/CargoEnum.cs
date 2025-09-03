@@ -1,4 +1,4 @@
-﻿namespace api_sistema_de_chamado.Enum
+﻿namespace api_sistema_de_chamado.Enums
 {
     public enum CargoEnum
     {

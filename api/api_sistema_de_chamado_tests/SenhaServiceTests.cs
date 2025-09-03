@@ -1,4 +1,4 @@
-﻿using api_sistema_de_chamado.Enum;
+﻿using api_sistema_de_chamado.Enums;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.Extensions.Configuration;

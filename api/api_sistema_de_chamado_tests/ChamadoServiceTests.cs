@@ -1,5 +1,5 @@
 ﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Enum;
+using api_sistema_de_chamado.Enums;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Repositories.Chamado;
 using api_sistema_de_chamado.Services.ChamadoService;

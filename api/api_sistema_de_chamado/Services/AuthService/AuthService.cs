@@ -3,9 +3,9 @@ using api_sistema_de_chamado.Dtos;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Services.SenhaService;
 using api_sistema_de_chamado.Repositories.Usuario;
-using api_sistema_de_chamado.Enum;
 using api_sistema_de_chamado.Repositories.AcessoLog;
 using System.Text.RegularExpressions;
+using api_sistema_de_chamado.Enums;
 
 namespace api_sistema_de_chamado.Services.AuthService
 {
@@ -22,17 +22,6 @@ namespace api_sistema_de_chamado.Services.AuthService
             _senhaInterface = senhaInterface;
             _httpContextAccessor = httpContextAccessor;
             _acessoLogRepository = acessoLogRepository;
-        }
-
-
-        public async Task<UsuarioCriacaoDto> RegistrarUsuario(UsuarioCriacaoDto usuarioRegistro)
-        {
-            return await Registrar(usuarioRegistro, CargoEnum.Usuario);
-        }
-
-        public async Task<UsuarioCriacaoDto> RegistrarAdmin(UsuarioCriacaoDto usuarioRegistro)
-        {
-            return await Registrar(usuarioRegistro, CargoEnum.Administrador);
         }
 
         public async Task<UsuarioCriacaoDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo)
