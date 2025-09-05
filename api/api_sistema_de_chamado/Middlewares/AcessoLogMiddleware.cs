@@ -1,6 +1,7 @@
 ﻿using api_sistema_de_chamado.Dtos;
 using api_sistema_de_chamado.Models;
 using api_sistema_de_chamado.Repositories.AcessoLog;
+using api_sistema_de_chamado.Services.AcessoLogService;
 
 namespace api_sistema_de_chamado.Middlewares
 {
@@ -13,41 +14,17 @@ namespace api_sistema_de_chamado.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IAcessoLogRepository acessoLogRepository)
+        public async Task InvokeAsync(HttpContext context, IAcessoLogService acessoLogService)
         {
-            if (context.User.Identity?.IsAuthenticated == true && !context.Items.ContainsKey("UsuarioLogAcesso"))
+            context.Response.OnStarting(async state =>
             {
-                context.Items["UsuarioLogAcesso"] = new UsuarioLogAcessoDto
-                {
-                    UsuarioId = int.Parse(context.User.FindFirst("Id")!.Value),
-                    Nome = context.User.FindFirst("Username")?.Value ?? string.Empty,
-                    Email = context.User.FindFirst("Email")?.Value ?? string.Empty
-                };
-            }
-
-            context.Response.OnStarting(async () =>
-            {
-                if (context.Items["UsuarioLogAcesso"] is UsuarioLogAcessoDto usuarioLog)
-                {
-                    var log = new AcessoLogModel(
-                        usuarioLog.UsuarioId,
-                        usuarioLog.Nome,
-                        usuarioLog.Email,
-                        context.Connection.RemoteIpAddress?.ToString() ?? "IP desconhecido",
-                        context.Request.Method,
-                        context.Request.Path
-                    );
-
-                    await acessoLogRepository.AdicionarAsync(log);
-                    await acessoLogRepository.SalvarAsync();
-                }
-            });
+                await acessoLogService.RegistrarLog();
+            }, default!);
 
             await _next(context);
         }
     }
 
-    // Extensão para registrar o middleware
     public static class AcessoLogMiddlewareExtensions
     {
         public static IApplicationBuilder UseAcessoLogs(this IApplicationBuilder builder)

@@ -11,6 +11,7 @@ using api_sistema_de_chamado.Middlewares;
 using api_sistema_de_chamado.Filters;
 using api_sistema_de_chamado.Repositories.AcessoLog;
 using Microsoft.AspNetCore.Mvc;
+using api_sistema_de_chamado.Services.AcessoLogService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IAuthInterface, AuthService>();
 builder.Services.AddScoped<ISenhaInterface, SenhaService>();
 builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
 builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
+builder.Services.AddScoped<IAcessoLogService, AcessoLogService>();
 builder.Services.AddCustomCors();
 builder.Services.AddHttpContextAccessor();
 
