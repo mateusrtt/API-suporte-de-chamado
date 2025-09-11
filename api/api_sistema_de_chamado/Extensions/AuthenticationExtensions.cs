@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Text.Json;
-using api_sistema_de_chamado.Models;
 
-namespace api_sistema_de_chamado.Extensions
+namespace API.Extensions
 {
     public static class AuthenticationExtensions
     {

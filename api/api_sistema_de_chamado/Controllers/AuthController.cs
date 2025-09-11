@@ -1,10 +1,8 @@
-﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Enums;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Services.AuthService;
+﻿using Domain.Enums;
+using Application.Interface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Application.Dtos;
 
 namespace api_sistema_de_chamado.Controllers
 {
@@ -12,8 +10,8 @@ namespace api_sistema_de_chamado.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthInterface _authService;
-        public AuthController(IAuthInterface authService)
+        private readonly IAuth _authService;
+        public AuthController(IAuth authService)
         {
             _authService = authService;
         }

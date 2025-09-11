@@ -1,26 +1,23 @@
-﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Enums;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Repositories.Chamado;
-using api_sistema_de_chamado.Services.ChamadoService;
-using api_sistema_de_chamado.Services.OpenAiService;
+﻿using Application.Dtos;
+using Application.Services;
+using Application.Interface;
+using Domain.Enums;
+using Domain.Interfaces;
+using Domain.Models;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace api_sistema_de_chamado_tests
 {
     public class ChamadoServiceTests
     {
         private readonly Mock<IChamadoRepository> _chamadoRepositoryMock;
-        private readonly Mock<IOpenAiInterface> _openAiServiceMock;
+        private readonly Mock<IOpenAi> _openAiServiceMock;
         private readonly ChamadoService _service;
 
         public ChamadoServiceTests()
         {
             _chamadoRepositoryMock = new Mock<IChamadoRepository>();
-            _openAiServiceMock = new Mock<IOpenAiInterface>();
+            _openAiServiceMock = new Mock<IOpenAi>();
             _service = new ChamadoService(_chamadoRepositoryMock.Object, _openAiServiceMock.Object);
         }
 
@@ -35,7 +32,7 @@ namespace api_sistema_de_chamado_tests
                 .Setup(s => s.ObterPrioridadePorDescricaoAsync(dto.Descricao))
                 .ReturnsAsync((int)PrioridadeEnum.Alta);
 
-            _chamadoRepositoryMock.Setup(r => r.AdicionarAsync(It.IsAny<ChamadoModel>()));
+            _chamadoRepositoryMock.Setup(r => r.AdicionarAsync(It.IsAny<Chamado>()));
             _chamadoRepositoryMock.Setup(r => r.SalvarAsync());
 
             // Act
@@ -56,7 +53,7 @@ namespace api_sistema_de_chamado_tests
             var dto = new ResponderChamadoDto { Resposta = "Resolvido" };
 
             _chamadoRepositoryMock.Setup(r => r.ObterIdAsync(chamadoId))
-                                  .ReturnsAsync((ChamadoModel?)null);
+                                  .ReturnsAsync((Chamado?)null);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<ApplicationException>(() => _service.ResponderChamadoAsync(chamadoId, dto));
@@ -70,12 +67,12 @@ namespace api_sistema_de_chamado_tests
             int chamadoId = 1;
             var dto = new ResponderChamadoDto { Resposta = "Resolvido" };
 
-            var chamado = new ChamadoModel("Erro de login", 1, PrioridadeEnum.Baixa);
+            var chamado = new Chamado("Erro de login", 1, PrioridadeEnum.Baixa);
 
             _chamadoRepositoryMock.Setup(r => r.ObterIdAsync(chamadoId))
                                   .ReturnsAsync(chamado);
 
-            _chamadoRepositoryMock.Setup(r => r.AtualizarAsync(It.IsAny<ChamadoModel>()));
+            _chamadoRepositoryMock.Setup(r => r.AtualizarAsync(It.IsAny<Chamado>()));
             _chamadoRepositoryMock.Setup(r => r.SalvarAsync());
 
             // Act
@@ -93,10 +90,10 @@ namespace api_sistema_de_chamado_tests
         public async Task ListarChamadosPorUsuarioAsync_DeveRetornarChamados(int usuarioId)
         {
             // Arrange
-            var chamados = new List<ChamadoModel>
+            var chamados = new List<Chamado>
             {
-                new ChamadoModel("Erro 1", usuarioId, PrioridadeEnum.Alta),
-                new ChamadoModel("Erro 2", usuarioId, PrioridadeEnum.Baixa)
+                new Chamado("Erro 1", usuarioId, PrioridadeEnum.Alta),
+                new Chamado("Erro 2", usuarioId, PrioridadeEnum.Baixa)
             };
 
             _chamadoRepositoryMock.Setup(r => r.ObterPorUsuarioAsync(usuarioId))
@@ -115,10 +112,10 @@ namespace api_sistema_de_chamado_tests
         public async Task ListarTodosOsChamadosAsync_DeveRetornarChamados()
         {
             // Arrange
-            var chamados = new List<ChamadoModel>
+            var chamados = new List<Chamado>
             {
-                new ChamadoModel("Erro 1", 1, PrioridadeEnum.Alta),
-                new ChamadoModel("Erro 2", 2, PrioridadeEnum.Baixa)
+                new Chamado("Erro 1", 1, PrioridadeEnum.Alta),
+                new Chamado("Erro 2", 2, PrioridadeEnum.Baixa)
             };
 
             _chamadoRepositoryMock.Setup(r => r.ObterTodosAsync())

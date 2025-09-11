@@ -1,14 +1,15 @@
-﻿using api_sistema_de_chamado.Enums;
-using api_sistema_de_chamado.Services.OpenAiService;
+﻿using Application.Dtos;
+using Application.Services;
+using Application.Interface;
+using Domain.Enums;
+using Domain.Interfaces;
+using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace api_sistema_de_chamado_tests
 {

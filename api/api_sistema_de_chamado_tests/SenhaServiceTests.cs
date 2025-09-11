@@ -1,15 +1,14 @@
-﻿using api_sistema_de_chamado.Enums;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Services.SenhaService;
+﻿using Application.Dtos;
+using Application.Services;
+using Application.Interface;
+using Domain.Enums;
+using Domain.Interfaces;
+using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace api_sistema_de_chamado_tests
 {
@@ -88,7 +87,7 @@ namespace api_sistema_de_chamado_tests
             int id, string nome, string email, CargoEnum cargo, string cargoEsperado)
             {
             // Arrange
-            var usuario = new UsuariosModel(
+            var usuario = new Usuario(
                 nome,
                 email,
                 cargo,
@@ -97,7 +96,7 @@ namespace api_sistema_de_chamado_tests
                 true
             );
 
-            var idProperty = typeof(UsuariosModel).GetProperty("Id");
+            var idProperty = typeof(Usuario).GetProperty("Id");
             idProperty!.SetValue(usuario, id);
 
             // Act

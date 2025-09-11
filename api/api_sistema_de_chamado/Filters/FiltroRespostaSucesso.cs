@@ -1,8 +1,8 @@
-﻿using api_sistema_de_chamado.Models;
+﻿using API.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace api_sistema_de_chamado.Filters
+namespace API.Filters
 {
     public class FiltroRespostaSucesso : IAsyncResultFilter
     {

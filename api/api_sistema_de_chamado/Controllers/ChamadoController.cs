@@ -1,10 +1,7 @@
-﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Services.ChamadoService;
+﻿using Application.Dtos;
+using Application.Interface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace api_sistema_de_chamado.Controllers
 {
@@ -12,9 +9,9 @@ namespace api_sistema_de_chamado.Controllers
     [ApiController]
     public class ChamadoController : ControllerBase
     {
-        private readonly IChamadoInterface _chamadoService;
+        private readonly IChamado _chamadoService;
 
-        public ChamadoController(IChamadoInterface chamadoService)
+        public ChamadoController(IChamado chamadoService)
         {
             _chamadoService = chamadoService;
         }

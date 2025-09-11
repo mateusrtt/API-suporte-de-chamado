@@ -1,9 +1,6 @@
-﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Repositories.AcessoLog;
-using api_sistema_de_chamado.Services.AcessoLogService;
+﻿using Application.Interface;
 
-namespace api_sistema_de_chamado.Middlewares
+namespace API.Middlewares
 {
     public class AcessoLogMiddleware
     {
@@ -14,7 +11,7 @@ namespace api_sistema_de_chamado.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IAcessoLogService acessoLogService)
+        public async Task InvokeAsync(HttpContext context, IAcessoLog acessoLogService)
         {
             context.Response.OnStarting(async state =>
             {

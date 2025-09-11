@@ -1,17 +1,14 @@
-using api_sistema_de_chamado.Data;
-using api_sistema_de_chamado.Repositories.Chamado;
-using api_sistema_de_chamado.Repositories.Usuario;
-using api_sistema_de_chamado.Services.AuthService;
-using api_sistema_de_chamado.Services.ChamadoService;
-using api_sistema_de_chamado.Services.OpenAiService;
-using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.EntityFrameworkCore;
-using api_sistema_de_chamado.Extensions;
 using api_sistema_de_chamado.Middlewares;
-using api_sistema_de_chamado.Filters;
-using api_sistema_de_chamado.Repositories.AcessoLog;
 using Microsoft.AspNetCore.Mvc;
-using api_sistema_de_chamado.Services.AcessoLogService;
+using API.Extensions;
+using API.Filters;
+using API.Middlewares;
+using Domain.Interfaces;
+using Infrastructure.Repositories;
+using Application.Interface;
+using Application.Services;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,11 +20,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
 builder.Services.AddScoped<IAcessoLogRepository, AcessoLogRepository>();
-builder.Services.AddScoped<IAuthInterface, AuthService>();
-builder.Services.AddScoped<ISenhaInterface, SenhaService>();
-builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
-builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
-builder.Services.AddScoped<IAcessoLogService, AcessoLogService>();
+builder.Services.AddScoped<IAuth, AuthService>();
+builder.Services.AddScoped<ISenha, SenhaService>();
+builder.Services.AddHttpClient<IOpenAi, OpenAiService>();
+builder.Services.AddScoped<IChamado, ChamadoService>();
+builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
 builder.Services.AddCustomCors();
 builder.Services.AddHttpContextAccessor();
 

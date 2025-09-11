@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\api_sistema_de_chamado\api_sistema_de_chamado.csproj" />
+    <ProjectReference Include="..\api_sistema_de_chamado\API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

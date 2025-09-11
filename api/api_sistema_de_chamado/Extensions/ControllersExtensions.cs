@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace api_sistema_de_chamado.Extensions
+namespace API.Extensions
 {
     public static class ControllersExtensions
     {
