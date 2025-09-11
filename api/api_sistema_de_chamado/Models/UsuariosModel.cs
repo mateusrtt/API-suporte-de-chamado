@@ -42,22 +42,6 @@ namespace api_sistema_de_chamado.Models
             AceitouPoliticaPrivacidade = aceitoupoliticaPrivacidade;
         }
 
-        public void AlterarSenha(string novaSenha, ISenhaInterface senhaInterface)
-        {
-            if (!Regex.IsMatch(novaSenha, @"^.{5,10}$"))
-                throw new ArgumentException("Senha inválida: deve ter entre 5 e 10 caracteres");
-
-            senhaInterface.CriarSenhaHash(novaSenha, out byte[] hash, out byte[] salt);
-            SenhaHash = hash;
-            SenhaSalt = salt;
-        }
-
-        public void ValidarSenha(string senha, ISenhaInterface senhaInterface)
-        {
-            if (!senhaInterface.VerificaSenhaHash(senha, SenhaHash, SenhaSalt))
-                throw new ApplicationException("Senha inválida!");
-        }
-
         public void RevogarAceitePolitica()
         {
             AceitouPoliticaPrivacidade = false;

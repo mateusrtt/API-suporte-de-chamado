@@ -67,7 +67,8 @@ namespace api_sistema_de_chamado.Services.AuthService
          if (usuario == null)
             throw new ApplicationException("Email inválido!");
 
-            usuario.ValidarSenha(usuarioLogin.Senha, _senhaInterface);
+            if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
+                throw new ApplicationException("Senha inválida!");
 
             var token = _senhaInterface.CriarToken(usuario);
 
