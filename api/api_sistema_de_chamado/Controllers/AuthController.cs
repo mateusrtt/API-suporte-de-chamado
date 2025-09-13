@@ -1,8 +1,8 @@
-﻿using Domain.Enums;
-using Application.Interface;
+﻿using Application.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dtos;
+using Domain.Enums;
 
 namespace api_sistema_de_chamado.Controllers
 {
