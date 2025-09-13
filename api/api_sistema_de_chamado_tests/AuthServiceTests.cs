@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace api_sistema_de_chamado_tests
+namespace Api_tests
 {
     public class AuthServiceTests
     {

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "api_sistema_de_chamado\API.csproj", "{E6B8BF10-965A-4A1B-A6B0-10C4644A81C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "api_sistema_de_chamado\Api.csproj", "{E6B8BF10-965A-4A1B-A6B0-10C4644A81C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api_sistema_de_chamado_tests", "api_sistema_de_chamado_tests\api_sistema_de_chamado_tests.csproj", "{7B73951B-79E0-437B-A937-80E5AF4314C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api_tests", "api_sistema_de_chamado_tests\Api_tests.csproj", "{7B73951B-79E0-437B-A937-80E5AF4314C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{9C376E0F-B7BC-4B89-932A-C75A08641143}"
 EndProject

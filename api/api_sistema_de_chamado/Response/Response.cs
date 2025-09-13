@@ -1,4 +1,4 @@
-﻿namespace API.Response
+﻿namespace Api.Response
 {
     public class Response<T>
     {

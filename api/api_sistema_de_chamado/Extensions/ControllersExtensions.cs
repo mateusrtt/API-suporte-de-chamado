@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace API.Extensions
+namespace Api.Extensions
 {
     public static class ControllersExtensions
     {

@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 
-namespace api_sistema_de_chamado_tests
+namespace Api_tests
 {
     public class SenhaServiceTests
     {

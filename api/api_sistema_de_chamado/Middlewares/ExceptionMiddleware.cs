@@ -1,8 +1,8 @@
-﻿using API.Response;
+﻿using Api.Response;
 using System.Net;
 using System.Text.Json;
 
-namespace api_sistema_de_chamado.Middlewares
+namespace Api.Middlewares
 {
     public class ExceptionMiddleware
     {

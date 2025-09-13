@@ -1,6 +1,6 @@
 ﻿using Application.Interface;
 
-namespace API.Middlewares
+namespace Api.Middlewares
 {
     public class AcessoLogMiddleware
     {

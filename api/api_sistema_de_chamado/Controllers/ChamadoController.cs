@@ -3,7 +3,7 @@ using Application.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api_sistema_de_chamado.Controllers
+namespace Api.Controllers
 {
     [Route("suporte/v1/chamados")]
     [ApiController]

@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
 
     <ImplicitUsings>enable</ImplicitUsings>
-	  <RootNamespace>API</RootNamespace>
-    <AssemblyName>API</AssemblyName>	  
+	  <RootNamespace>Api</RootNamespace>
+    <AssemblyName>Api</AssemblyName>	  
   </PropertyGroup>
 
   <ItemGroup>

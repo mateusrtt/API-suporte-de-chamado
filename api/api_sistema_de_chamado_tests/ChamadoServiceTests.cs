@@ -6,7 +6,7 @@ using Domain.Interfaces;
 using Domain.Models;
 using Moq;
 
-namespace api_sistema_de_chamado_tests
+namespace Api_tests
 {
     public class ChamadoServiceTests
     {

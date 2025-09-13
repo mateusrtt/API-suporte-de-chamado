@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using api_sistema_de_chamado.Middlewares;
 using Microsoft.AspNetCore.Mvc;
-using API.Extensions;
-using API.Filters;
-using API.Middlewares;
+using Api.Extensions;
+using Api.Filters;
+using Api.Middlewares;
 using Domain.Interfaces;
 using Infrastructure.Repositories;
 using Application.Interface;

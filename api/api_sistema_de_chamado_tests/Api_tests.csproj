@@ -19,7 +19,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\api_sistema_de_chamado\API.csproj" />
+		<ProjectReference Include="..\api_sistema_de_chamado\Api.csproj" />
 		<ProjectReference Include="..\Application\Application.csproj" />
 		<ProjectReference Include="..\Domain\Domain.csproj" />
 	</ItemGroup>

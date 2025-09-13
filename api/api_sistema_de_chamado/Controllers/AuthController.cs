@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Dtos;
 using Domain.Enums;
 
-namespace api_sistema_de_chamado.Controllers
+namespace Api.Controllers
 {
     [Route("suporte/v1/usuarios")]
     [ApiController]
