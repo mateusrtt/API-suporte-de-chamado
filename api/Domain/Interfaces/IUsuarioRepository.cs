@@ -8,5 +8,8 @@ namespace Domain.Interfaces
         Task AdicionarAsync(Usuario usuario);
         Task SalvarAsync();
         Task<Usuario?> ObterPorEmailAsync(string email);
+        Task<Usuario?> ObterPorIdAsync(int id);
+        void Atualizar(Usuario usuario);
+        void Deletar(Usuario usuario);
     }
 }

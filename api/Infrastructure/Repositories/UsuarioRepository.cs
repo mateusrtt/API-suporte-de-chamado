@@ -34,5 +34,19 @@ namespace Infrastructure.Repositories
             return await _context.Usuario.FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<Usuario?> ObterPorIdAsync(int id)
+        {
+            return await _context.Usuario.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public void Atualizar(Usuario usuario)
+        {
+            _context.Usuario.Update(usuario);
+        }
+
+        public void Deletar(Usuario usuario)
+        {
+            _context.Usuario.Remove(usuario);
+        }
     }
 }

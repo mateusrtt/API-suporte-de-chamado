@@ -1,4 +1,5 @@
-﻿using Application.Interface;
+﻿using Application.Dtos;
+using Application.Interface;
 
 namespace Api.Middlewares
 {
@@ -13,20 +14,31 @@ namespace Api.Middlewares
 
         public async Task InvokeAsync(HttpContext context, IAcessoLog acessoLogService)
         {
-            context.Response.OnStarting(async state =>
+            // Preenche antes do controller, se houver JWT
+            if (context.User.Identity?.IsAuthenticated == true &&
+                !context.Items.ContainsKey("UsuarioLogAcesso"))
             {
-                await acessoLogService.RegistrarLog();
-            }, default!);
+                context.Items["UsuarioLogAcesso"] = new UsuarioLogAcessoDto
+                {
+                    UsuarioId = int.Parse(context.User.FindFirst("Id")!.Value),
+                    Nome = context.User.FindFirst("Username")?.Value ?? string.Empty,
+                    Email = context.User.FindFirst("Email")?.Value ?? string.Empty
+                };
+            }
 
+            // Controller executa com HttpContext.Items preenchido
             await _next(context);
+
+            // Depois registra o log
+            await acessoLogService.RegistrarLog();
         }
     }
 
     public static class AcessoLogMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseAcessoLogs(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<AcessoLogMiddleware>();
+            public static IApplicationBuilder UseAcessoLogs(this IApplicationBuilder builder)
+            {
+                return builder.UseMiddleware<AcessoLogMiddleware>();
+            }
         }
     }
-}
