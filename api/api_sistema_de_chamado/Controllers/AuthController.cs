@@ -6,7 +6,7 @@ using Domain.Enums;
 
 namespace Api.Controllers
 {
-    [Route("suporte/v1/usuarios")]
+    [Route("suporte/v1/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {

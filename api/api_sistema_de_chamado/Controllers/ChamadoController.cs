@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Route("suporte/v1/chamados")]
+    [Route("suporte/v1/chamado")]
     [ApiController]
     public class ChamadoController : ControllerBase
     {

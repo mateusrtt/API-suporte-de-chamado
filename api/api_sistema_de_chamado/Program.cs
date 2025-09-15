@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Repositórios e serviços
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuario, UsuarioService>();
 builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
 builder.Services.AddScoped<IAcessoLogRepository, AcessoLogRepository>();
 builder.Services.AddScoped<IAuth, AuthService>();
@@ -63,7 +64,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseAuthorization();
 app.UseAcessoLogs();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
