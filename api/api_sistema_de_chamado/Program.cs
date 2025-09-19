@@ -24,7 +24,8 @@ builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<ISenha, SenhaService>();
 builder.Services.AddHttpClient<IOpenAi, OpenAiService>();
 builder.Services.AddScoped<IChamado, ChamadoService>();
-builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
+builder.Services.AddScoped<FiltroLogAcesso>();
+builder.Services.AddScoped<FiltroRespostaSucesso>();
 builder.Services.AddCustomCors();
 builder.Services.AddHttpContextAccessor();
 
@@ -38,6 +39,7 @@ builder.Services.AddDbContext<AppDbContext>(Options =>
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<FiltroRespostaSucesso>();
+    options.Filters.Add<FiltroLogAcesso>();
 });
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -64,7 +66,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseAcessoLogs();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

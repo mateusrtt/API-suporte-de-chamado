@@ -10,15 +10,14 @@ namespace Application.Services
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ISenha _senhaInterface;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAcessoLog _acessoLogService;
+        
 
 
-        public UsuarioService(IUsuarioRepository usuarioRepository, ISenha senhaInterface, IHttpContextAccessor httpContextAccessor, IAcessoLog acessoLogService)
+        public UsuarioService(IUsuarioRepository usuarioRepository, ISenha senhaInterface, IHttpContextAccessor httpContextAccessor)
         {
             _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
             _httpContextAccessor = httpContextAccessor;
-            _acessoLogService = acessoLogService;
         }
 
         public async Task<UsuarioLeituraDto> Atualizar(int id, UsuarioUpdateDto dto, int usuarioLogadoId)
@@ -76,14 +75,6 @@ namespace Application.Services
             if (usuario == null)
                 throw new ApplicationException("Usuário não encontrado.");
 
-            _httpContextAccessor.HttpContext!.Items["UsuarioLogAcesso"] = new UsuarioLogAcessoDto
-            {
-                UsuarioId = usuario.Id,
-                Nome = usuario.Nome,
-                Email = usuario.Email
-            };
-
-            await _acessoLogService.RegistrarLog();
             _usuarioRepository.Deletar(usuario);
             await _usuarioRepository.SalvarAsync();
 

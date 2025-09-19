@@ -5,7 +5,7 @@ namespace Application.Interface
 {
     public interface IAuth
     {
-        Task<UsuarioCriacaoDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo);
-        Task<string> Login(UsuarioLoginDto usuarioLogin);
+        Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo, bool registrarLog = true);
+        Task<UsuarioLoginRespostaDto> Login(UsuarioLoginDto usuarioLogin);
     }
 }

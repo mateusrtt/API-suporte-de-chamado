@@ -1,4 +1,5 @@
-﻿using Application.Dtos;
+﻿using Api.Attributes;
+using Application.Dtos;
 using Application.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,25 +20,30 @@ namespace Api.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Usuario,Administrador")]
-        public async Task<ActionResult<UsuarioLeituraDto>> Atualizar(int id, [FromBody] UsuarioUpdateDto dto)
+        [MensagemSucessoAtributo("Dados atualizados com sucesso!")]
+        public async Task<ActionResult> Atualizar(int id, [FromBody] UsuarioUpdateDto dto)
         {
-            var usuarioLogado = (UsuarioLogAcessoDto)HttpContext.Items["UsuarioLogAcesso"]!;
-            var resultado = await _usuarioService.Atualizar(id, dto, usuarioLogado.UsuarioId);
-            HttpContext.Items["MensagemSucesso"] = "Dados atualizados com sucesso!";
-            return Ok(resultado);
+            var usuarioIdString = HttpContext.User.FindFirst("Id")?.Value;
+            if (!int.TryParse(usuarioIdString, out var usuarioLogadoId))
+                return Unauthorized();
+
+            await _usuarioService.Atualizar(id, dto, usuarioLogadoId);
+
+            return Ok(true);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Usuario,Administrador")]
+        [MensagemSucessoAtributo("Conta deletada com sucesso!")]
         public async Task<ActionResult<bool>> Deletar(int id)
         {
-            var usuarioLogado = (UsuarioLogAcessoDto)HttpContext.Items["UsuarioLogAcesso"]!;
-            bool sucesso = await _usuarioService.Deletar(id, usuarioLogado.UsuarioId);
+            var usuarioIdString = HttpContext.User.FindFirst("Id")?.Value;
+            if (!int.TryParse(usuarioIdString, out var usuarioLogadoId))
+                return Unauthorized();
 
-            if (sucesso)
-                HttpContext.Items["MensagemSucesso"] = "Conta deletada com sucesso!";
+            await _usuarioService.Deletar(id, usuarioLogadoId);
 
-            return Ok(sucesso);
+            return Ok(true);
         }
     }
 }
