@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Application.Dtos;
 using Domain.Enums;
+using Api.Attributes;
 
 namespace Api.Controllers
 {
@@ -17,27 +18,27 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [MensagemSucessoAtributo("Usuário cadastrado com sucesso!")]
         public async Task<ActionResult> RegisterUser([FromBody] UsuarioCriacaoDto dto)
         {
-            var resultado = await _authService.Registrar(dto, CargoEnum.Usuario);
-            HttpContext.Items["MensagemSucesso"] = "Usuário cadastrado com sucesso!";
+            var resultado = await _authService.Registrar(dto, CargoEnum.Usuario, registrarLog: true);
             return Ok(resultado);
         }
 
         [Authorize(Roles = "Administrador")]
         [HttpPost("admins")]
+        [MensagemSucessoAtributo("Administrador cadastrado com sucesso!")]
         public async Task<ActionResult> RegisterAdmin([FromBody] UsuarioCriacaoDto dto)
         {
-            var resultado = await _authService.Registrar(dto, CargoEnum.Administrador);
-            HttpContext.Items["MensagemSucesso"] = "Administrador cadastrado com sucesso!";
+            var resultado = await _authService.Registrar(dto, CargoEnum.Administrador, registrarLog: false);
             return Ok(resultado);
         }
 
         [HttpPost("login")]
+        [MensagemSucessoAtributo("Login realizado com sucesso!")]
         public async Task<ActionResult> Login(UsuarioLoginDto usuarioLogin)
         {
             var resultado = await _authService.Login(usuarioLogin);
-            HttpContext.Items["MensagemSucesso"] = "Login realizado com sucesso!";
             return Ok(resultado);
         }
     }

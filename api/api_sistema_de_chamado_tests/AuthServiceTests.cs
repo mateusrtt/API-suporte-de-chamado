@@ -17,6 +17,7 @@ namespace Api_tests
         private readonly Mock<ISenha> _senhaMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly Mock<IAcessoLogRepository> _acessoLogRepoMock;
+        private readonly Mock<IRegistroLog> _registroLogMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
@@ -25,6 +26,7 @@ namespace Api_tests
             _senhaMock = new Mock<ISenha>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _acessoLogRepoMock = new Mock<IAcessoLogRepository>();
+            _registroLogMock = new Mock<IRegistroLog>();
 
             var httpContext = new DefaultHttpContext();
             httpContext.RequestServices = new ServiceCollection()
@@ -37,7 +39,8 @@ namespace Api_tests
               _usuarioRepoMock.Object,
               _senhaMock.Object,
               _httpContextAccessorMock.Object,
-              _acessoLogRepoMock.Object
+              _acessoLogRepoMock.Object,
+              _registroLogMock.Object
           );
         }
 
@@ -77,8 +80,8 @@ namespace Api_tests
 
             // Assert
             Assert.NotNull(resultado);
-            Assert.Equal(string.Empty, resultado.Nome);
-            Assert.Equal(string.Empty, resultado.Email);
+            Assert.Equal(dto.Nome, resultado.Nome);
+            Assert.Equal(dto.Email.ToLower(), resultado.Email);
         }
 
         [Fact]
@@ -138,7 +141,10 @@ namespace Api_tests
             var resultado = await _authService.Login(dto);
 
             // Assert
-            Assert.Equal("fake-jwt-token", resultado);
+            Assert.NotNull(resultado);
+            Assert.Equal("fake-jwt-token", resultado.Token);
+            Assert.Equal(usuario.Nome, resultado.Usuario.Nome);
+            Assert.Equal(usuario.Email.ToLower(), resultado.Usuario.Email);
         }
 
         [Fact]

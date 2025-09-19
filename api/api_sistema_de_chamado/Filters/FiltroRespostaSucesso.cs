@@ -1,6 +1,8 @@
-﻿using Api.Response;
+﻿using Api.Attributes;
+using Api.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Reflection;
 
 namespace Api.Filters
 {
@@ -8,20 +10,21 @@ namespace Api.Filters
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            if (context.Result is ObjectResult objectResult && objectResult.Value != null)
+            if (context.Result is ObjectResult resultadoObjeto && resultadoObjeto.Value != null)
             {
-                var mensagem = context.HttpContext.Items.ContainsKey("MensagemSucesso")
-                    ? context.HttpContext.Items["MensagemSucesso"]?.ToString()
-                    : "Operação realizada com sucesso.";
+                var metodoAction = (context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)?.MethodInfo;
 
-                var envelopado = new Response<object>
+                var atributoMensagem = metodoAction?.GetCustomAttribute<MensagemSucessoAtributo>();
+
+                var mensagem = atributoMensagem?.Mensagem ?? "Operação realizada com sucesso.";
+
+                var respostaEnvelopada = new Response<object>
                 {
-                    Dados = objectResult.Value,
-                    Mensagem = mensagem,
-                    Status = true
+                    Dados = resultadoObjeto.Value, 
+                    Mensagem = mensagem,           
+                    Status = true                  
                 };
-
-                context.Result = new OkObjectResult(envelopado);
+                context.Result = new OkObjectResult(respostaEnvelopada);
             }
             await next();
         }
