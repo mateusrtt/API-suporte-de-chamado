@@ -4,9 +4,8 @@ using Application.Interface;
 using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Domain.Exceptions;
 
 namespace Api_tests
 {
@@ -15,32 +14,16 @@ namespace Api_tests
 
         private readonly Mock<IUsuarioRepository> _usuarioRepoMock;
         private readonly Mock<ISenha> _senhaMock;
-        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
-        private readonly Mock<IAcessoLogRepository> _acessoLogRepoMock;
-        private readonly Mock<IRegistroLog> _registroLogMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _usuarioRepoMock = new Mock<IUsuarioRepository>();
             _senhaMock = new Mock<ISenha>();
-            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            _acessoLogRepoMock = new Mock<IAcessoLogRepository>();
-            _registroLogMock = new Mock<IRegistroLog>();
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.RequestServices = new ServiceCollection()
-                .AddSingleton(_acessoLogRepoMock.Object)
-                .BuildServiceProvider();
-
-            _httpContextAccessorMock.Setup(a => a.HttpContext).Returns(new DefaultHttpContext());
 
             _authService = new AuthService(
               _usuarioRepoMock.Object,
-              _senhaMock.Object,
-              _httpContextAccessorMock.Object,
-              _acessoLogRepoMock.Object,
-              _registroLogMock.Object
+              _senhaMock.Object
           );
         }
 
@@ -69,12 +52,6 @@ namespace Api_tests
             _usuarioRepoMock.Setup(x => x.AdicionarAsync(It.IsAny<Usuario>())).Returns(Task.CompletedTask);
             _usuarioRepoMock.Setup(x => x.SalvarAsync()).Returns(Task.CompletedTask);
 
-            _acessoLogRepoMock.Setup(x => x.AdicionarAsync(It.IsAny<AcessoLog>()))
-                             .ReturnsAsync((AcessoLog log) => log); // retorna o próprio log que foi passado
-
-            _acessoLogRepoMock.Setup(x => x.SalvarAsync())
-                              .ReturnsAsync(true);
-
             // Act
             var resultado = await _authService.Registrar(dto, CargoEnum.Usuario);
 
@@ -101,8 +78,8 @@ namespace Api_tests
                 "João",
                 "joao@email.com",
                 CargoEnum.Usuario,
-                new byte[] { 1, 2, 3 },   // hash dummy
-                new byte[] { 4, 5, 6 },   // salt dummy
+                [1, 2, 3],
+                [4, 5, 6],
                 true
             );
 
@@ -111,13 +88,13 @@ namespace Api_tests
                            "João",
                            "joao@email.com",
                            CargoEnum.Usuario,
-                           new byte[] { 1, 2, 3 },
-                           new byte[] { 4, 5, 6 },
+                           [1, 2, 3],
+                           [ 4, 5, 6 ],
                            true
                        ));
 
             // Act & Assert
-            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.Registrar(dto, CargoEnum.Usuario));
+            var ex = await Assert.ThrowsAsync<ConflitoException>(() => _authService.Registrar(dto, CargoEnum.Usuario));
             Assert.Equal("Email já cadastrado.", ex.Message);
         }
 
@@ -156,7 +133,7 @@ namespace Api_tests
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync((Usuario?)null);
 
             // Act Assert
-            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.Login(dto));
+            var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _authService.Login(dto));
             Assert.Equal("Email inválido!", ex.Message);
         }
 
@@ -183,7 +160,7 @@ namespace Api_tests
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(false);
 
             // Act & Assert
-            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _authService.Login(dto));
+            var ex = await Assert.ThrowsAsync<ValidacaoException>(() => _authService.Login(dto));
             Assert.Equal("Senha inválida!", ex.Message);
         }
     }

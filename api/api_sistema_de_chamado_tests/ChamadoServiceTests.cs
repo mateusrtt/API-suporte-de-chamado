@@ -5,6 +5,7 @@ using Domain.Enums;
 using Domain.Interfaces;
 using Domain.Models;
 using Moq;
+using Domain.Exceptions;
 
 namespace Api_tests
 {
@@ -56,7 +57,7 @@ namespace Api_tests
                                   .ReturnsAsync((Chamado?)null);
 
             // Act & Assert
-            var ex = await Assert.ThrowsAsync<ApplicationException>(() => _service.ResponderChamadoAsync(chamadoId, dto));
+            var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _service.ResponderChamadoAsync(chamadoId, dto));
             Assert.Equal("Chamado não encontrado.", ex.Message);
         }
 

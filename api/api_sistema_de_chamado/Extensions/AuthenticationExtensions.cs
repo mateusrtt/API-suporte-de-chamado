@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Domain.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -26,15 +27,15 @@ namespace Api.Extensions
                         OnChallenge = context =>
                         {
                             context.HandleResponse();
-                            throw new UnauthorizedAccessException("Token inválido ou não autorizado.");
+                            throw new NaoAutorizadoException("Token inválido ou não autorizado.");
                         },
                         OnForbidden = context =>
                         {
-                            throw new UnauthorizedAccessException("Você não tem permissão para acessar esta funcionalidade.");
+                            throw new ProibidoException("Você não tem permissão para acessar esta funcionalidade.");
                         },
                         OnAuthenticationFailed = context =>
                         {
-                            throw new ApplicationException("Falha ao processar o token JWT.", context.Exception);
+                            throw new ServicoIndisponivelException("Falha ao processar o token JWT.");
                         }
                     };
                 });

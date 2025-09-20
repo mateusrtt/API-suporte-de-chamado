@@ -1,16 +1,17 @@
 ﻿using Api.Response;
+using Domain.Exceptions;
 using System.Net;
 using System.Text.Json;
 
 namespace Api.Middlewares
 {
-    public class ExceptionMiddleware
+    public class MiddlewareExcecao
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
+        private readonly ILogger<MiddlewareExcecao> _logger;
         private readonly IHostEnvironment _env;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+        public MiddlewareExcecao(RequestDelegate next, ILogger<MiddlewareExcecao> logger, IHostEnvironment env)
         {
             _next = next;
             _logger = logger;
@@ -23,17 +24,11 @@ namespace Api.Middlewares
             {
                 await _next(context);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (ExcecaoAplicacao ex)
             {
-                _logger.LogWarning(ex, "Erro de autorização/autenticação.");
-                var mensagem = _env.IsDevelopment() ? ex.Message : "Acesso não autorizado.";
-                await HandleExceptionAsync(context, HttpStatusCode.Unauthorized, mensagem);
-            }
-            catch (ApplicationException ex)
-            {
-                _logger.LogError(ex, "Erro de aplicação.");
-                var mensagem = _env.IsDevelopment() ? ex.Message : "Erro de requisição.";
-                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, mensagem);
+                _logger.LogWarning(ex, "Erro controlado.");
+                var mensagem = _env.IsDevelopment() ? ex.Message : "Ocorreu um erro na requisição.";
+                await HandleExceptionAsync(context, ex.StatusCode, mensagem);
             }
             catch (Exception ex)
             {
@@ -50,20 +45,12 @@ namespace Api.Middlewares
 
             var result = new Response<object>
             {
-                Status = false,
+                Dados = null,
                 Mensagem = mensagem,
-                Dados = null
+                Status = false,
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(result));
-        }
-    }
-
-    public static class ExceptionMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseGlobalExceptionMiddleware(this IApplicationBuilder app)
-        {
-            return app.UseMiddleware<ExceptionMiddleware>();
         }
     }
 }

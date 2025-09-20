@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Api.Extensions;
 using Api.Filters;
-using Api.Middlewares;
 using Domain.Interfaces;
 using Infrastructure.Repositories;
 using Application.Interface;
@@ -55,7 +54,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseGlobalExceptionMiddleware();
+app.UsarMiddlewareDeExcecao();
 
 if (app.Environment.IsDevelopment())
 {

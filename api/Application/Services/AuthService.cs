@@ -3,8 +3,8 @@ using Application.Interface;
 using Domain.Interfaces;
 using Domain.Enums;
 using Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Application.Dtos;
+using Domain.Exceptions;
 
 namespace Application.Services
 {
@@ -12,29 +12,24 @@ namespace Application.Services
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ISenha _senhaInterface;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAcessoLogRepository _acessoLogRepository;
         
-
-        public AuthService(IUsuarioRepository usuarioRepository, ISenha senhaInterface, IHttpContextAccessor httpContextAccessor, IAcessoLogRepository acessoLogRepository)
+        public AuthService(IUsuarioRepository usuarioRepository, ISenha senhaInterface)
         {
             _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
-            _httpContextAccessor = httpContextAccessor;
-            _acessoLogRepository = acessoLogRepository;
         }
 
         public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo, bool registrarLog = true)
         {
             var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(usuarioRegistro.Email.ToLower());
             if (usuarioExistente != null)
-                throw new ApplicationException("Email já cadastrado.");
+                throw new ConflitoException("Email já cadastrado.");
 
             if (string.IsNullOrWhiteSpace(usuarioRegistro.Senha) || !Regex.IsMatch(usuarioRegistro.Senha, @"^.{5,10}$"))
-                throw new ApplicationException("Senha inválida: deve ter entre 5 e 10 caracteres");
+                throw new ValidacaoException("Senha inválida: deve ter entre 5 e 10 caracteres");
 
             if (usuarioRegistro.Senha != usuarioRegistro.ConfirmarSenha)
-                throw new ApplicationException("Senha e confirmação não coincidem");
+                throw new ValidacaoException("Senha e confirmação não coincidem");
 
             _senhaInterface.CriarSenhaHash(usuarioRegistro.Senha, out byte[] senhaHash, out byte[] senhaSalt);
 
@@ -58,10 +53,10 @@ namespace Application.Services
 
             var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email.ToLower());
             if (usuario == null)
-                throw new ApplicationException("Email inválido!");
+                throw new NaoEncontradoException("Email inválido!");
 
             if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
-                throw new ApplicationException("Senha inválida!");
+                throw new ValidacaoException("Senha inválida!");
 
             var token = _senhaInterface.CriarToken(usuario);
 
