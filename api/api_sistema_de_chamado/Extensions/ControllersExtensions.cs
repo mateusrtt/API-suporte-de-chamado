@@ -1,15 +1,22 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Api.Extensions
 {
     public static class ControllersExtensions
     {
-        public static IServiceCollection AddCustomControllers(this IServiceCollection services)
+        public static IServiceCollection AddCustomControllers(this IServiceCollection services, Action<MvcOptions>? configureMvc = null)
         {
-            services.AddControllers()
+            services.AddControllers(options =>
+            {
+                configureMvc?.Invoke(options);
+            })
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    options.JsonSerializerOptions.DictionaryKeyPolicy = null;
                 });
             return services;
         }

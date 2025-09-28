@@ -10,10 +10,6 @@ using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configura Controllers e enums como string
-builder.Services.AddCustomControllers();
-builder.Services.AddEndpointsApiExplorer();
-
 // Repositórios e serviços
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuario, UsuarioService>();
@@ -34,8 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(Options =>
     Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Filtro de resposta de sucesso
-builder.Services.AddControllers(options =>
+builder.Services.AddCustomControllers(options =>
 {
     options.Filters.Add<FiltroRespostaSucesso>();
     options.Filters.Add<FiltroLogAcesso>();

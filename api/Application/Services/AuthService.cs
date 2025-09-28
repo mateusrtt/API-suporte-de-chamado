@@ -1,8 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using Application.Interface;
+﻿using Application.Interface;
 using Domain.Interfaces;
-using Domain.Enums;
-using Domain.Models;
 using Application.Dtos;
 using Domain.Exceptions;
 
@@ -17,35 +14,6 @@ namespace Application.Services
         {
             _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
-        }
-
-        public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo, bool registrarLog = true)
-        {
-            var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(usuarioRegistro.Email.ToLower());
-            if (usuarioExistente != null)
-                throw new ConflitoException("Email já cadastrado.");
-
-            if (string.IsNullOrWhiteSpace(usuarioRegistro.Senha) || !Regex.IsMatch(usuarioRegistro.Senha, @"^.{5,10}$"))
-                throw new ValidacaoException("Senha inválida: deve ter entre 5 e 10 caracteres");
-
-            if (usuarioRegistro.Senha != usuarioRegistro.ConfirmarSenha)
-                throw new ValidacaoException("Senha e confirmação não coincidem");
-
-            _senhaInterface.CriarSenhaHash(usuarioRegistro.Senha, out byte[] senhaHash, out byte[] senhaSalt);
-
-            Usuario usuario = new Usuario(
-                usuarioRegistro.Nome,
-                usuarioRegistro.Email.ToLower(),
-                cargo,
-                senhaHash,
-                senhaSalt,
-                usuarioRegistro.AceitouPoliticaPrivacidade
-            );
-
-            await _usuarioRepository.AdicionarAsync(usuario);
-            await _usuarioRepository.SalvarAsync();
-
-            return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
         }
 
         public async Task<UsuarioLoginRespostaDto> Login(UsuarioLoginDto usuarioLogin)

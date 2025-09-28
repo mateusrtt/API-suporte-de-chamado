@@ -1,6 +1,7 @@
 ﻿using Api.Attributes;
 using Application.Dtos;
 using Application.Interface;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,6 @@ namespace Api.Controllers
 {
     [Route("suporte/v1/usuario")]
     [ApiController]
-    [Authorize]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuario _usuarioService;
@@ -16,6 +16,23 @@ namespace Api.Controllers
         public UsuarioController(IUsuario usuarioService)
         {
             _usuarioService = usuarioService;
+        }
+
+        [HttpPost]
+        [MensagemSucessoAtributo("Usuário cadastrado com sucesso!")]
+        public async Task<ActionResult> RegistrarUsuario([FromBody] UsuarioCriacaoDto dto)
+        {
+            var resultado = await _usuarioService.Registrar(dto, CargoEnum.Usuario, registrarLog: true);
+            return Ok(resultado);
+        }
+
+        [HttpPost("admin")]
+        [Authorize(Roles = "Administrador")]
+        [MensagemSucessoAtributo("Administrador cadastrado com sucesso!")]
+        public async Task<ActionResult> RegistrarAdmin([FromBody] UsuarioCriacaoDto dto)
+        {
+            var resultado = await _usuarioService.Registrar(dto, CargoEnum.Administrador, registrarLog: false);
+            return Ok(resultado);
         }
 
         [HttpPut("{id}")]
