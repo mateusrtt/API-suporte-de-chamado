@@ -19,6 +19,7 @@ builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<ISenha, SenhaService>();
 builder.Services.AddHttpClient<IOpenAi, OpenAiService>();
 builder.Services.AddScoped<IChamado, ChamadoService>();
+builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
 builder.Services.AddScoped<FiltroLogAcesso>();
 builder.Services.AddScoped<FiltroRespostaSucesso>();
 builder.Services.AddCustomCors();
