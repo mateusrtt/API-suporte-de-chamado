@@ -7,17 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controller responsável pelos endpoints de usuários.
+    /// Permite registrar, atualizar e deletar usuários, controlando acesso por perfil.
+    /// </summary>
     [Route("suporte/v1/usuario")]
     [ApiController]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuario _usuarioService;
 
+        /// <summary>
+        /// Construtor que injeta o serviço de usuários.
+        /// </summary>
+        /// <param name="usuarioService">Serviço de usuários (IUsuario) usado para processar as operações.</param>
         public UsuarioController(IUsuario usuarioService)
         {
             _usuarioService = usuarioService;
         }
 
+        /// <summary>
+        /// Registra um usuário comum no sistema.
+        /// </summary>
+        /// <param name="dto">DTO contendo os dados do usuário a ser registrado.</param>
+        /// <returns>ActionResult com o usuário criado.</returns>
         [HttpPost]
         [MensagemSucessoAtributo("Usuário cadastrado com sucesso!")]
         public async Task<ActionResult> RegistrarUsuario([FromBody] UsuarioCriacaoDto dto)
@@ -26,6 +39,11 @@ namespace Api.Controllers
             return Ok(resultado);
         }
 
+        /// <summary>
+        /// Registra um administrador (apenas para usuários com perfil Administrador).
+        /// </summary>
+        /// <param name="dto">DTO contendo os dados do administrador a ser registrado.</param>
+        /// <returns>ActionResult com o administrador criado.</returns>
         [HttpPost("admin")]
         [Authorize(Roles = "Administrador")]
         [MensagemSucessoAtributo("Administrador cadastrado com sucesso!")]
@@ -35,6 +53,13 @@ namespace Api.Controllers
             return Ok(resultado);
         }
 
+        /// <summary>
+        /// Atualiza os dados de um usuário.
+        /// Apenas o próprio usuário podem atualizar os dados.
+        /// </summary>
+        /// <param name="id">ID do usuário a ser atualizado.</param>
+        /// <param name="dto">DTO contendo os dados atualizados.</param>
+        /// <returns>ActionResult indicando sucesso da operação.</returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Usuario,Administrador")]
         [MensagemSucessoAtributo("Dados atualizados com sucesso!")]
@@ -49,6 +74,12 @@ namespace Api.Controllers
             return Ok(true);
         }
 
+        /// <summary>
+        /// Deleta a conta de um usuário.
+        /// Apenas o próprio usuário podem deletar a conta.
+        /// </summary>
+        /// <param name="id">ID do usuário a ser deletado.</param>
+        /// <returns>ActionResult indicando sucesso da operação.</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Usuario,Administrador")]
         [MensagemSucessoAtributo("Conta deletada com sucesso!")]
