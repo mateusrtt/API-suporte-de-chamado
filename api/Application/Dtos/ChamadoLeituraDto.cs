@@ -11,5 +11,6 @@ namespace Application.Dtos
         public StatusChamadoEnum Status { get; set; }
         public DateTime ChamadoDataCriacao { get; set; }
         public int UsuarioId { get; set; }
+        public string Nome { get; set; } = string.Empty;
     }
 }

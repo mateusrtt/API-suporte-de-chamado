@@ -75,7 +75,8 @@ namespace Application.Services
                 Status = chamado.Status,
                 ChamadoDataCriacao = chamado.ChamadoDataCriacao,
                 UsuarioId = chamado.UsuarioId,
-                Prioridade = chamado.Prioridade
+                Prioridade = chamado.Prioridade,
+                Nome = chamado.Usuario?.Nome ?? string.Empty
             };
     }
 }
