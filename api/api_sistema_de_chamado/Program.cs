@@ -7,6 +7,8 @@ using Infrastructure.Repositories;
 using Application.Interface;
 using Application.Services;
 using Infrastructure.Data;
+using Application.Configurations;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +22,14 @@ builder.Services.AddScoped<ISenha, SenhaService>();
 builder.Services.AddHttpClient<IOpenAi, OpenAiService>();
 builder.Services.AddScoped<IChamado, ChamadoService>();
 builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
+builder.Services.AddScoped<IToken, TokenService>();
 builder.Services.AddScoped<FiltroLogAcesso>();
 builder.Services.AddScoped<FiltroRespostaSucesso>();
 builder.Services.AddCustomCors();
 builder.Services.AddHttpContextAccessor();
+
+// Bind da configuração JWT
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
 // Banco de dados
 builder.Services.AddDbContext<AppDbContext>(Options =>

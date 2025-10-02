@@ -9,11 +9,13 @@ namespace Application.Services
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ISenha _senhaInterface;
-        
-        public AuthService(IUsuarioRepository usuarioRepository, ISenha senhaInterface)
+        private readonly IToken _tokenService;
+
+        public AuthService(IUsuarioRepository usuarioRepository, ISenha senhaInterface, IToken tokenService)
         {
             _usuarioRepository = usuarioRepository;
             _senhaInterface = senhaInterface;
+            _tokenService = tokenService;
         }
 
         public async Task<UsuarioLoginRespostaDto> Login(UsuarioLoginDto usuarioLogin)
@@ -26,7 +28,7 @@ namespace Application.Services
             if (!_senhaInterface.VerificaSenhaHash(usuarioLogin.Senha, usuario.SenhaHash, usuario.SenhaSalt))
                 throw new ValidacaoException("Senha inválida!");
 
-            var token = _senhaInterface.CriarToken(usuario);
+            var token = _tokenService.CriarToken(usuario);
 
             var usuarioDto = new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
             return new UsuarioLoginRespostaDto(usuarioDto, token);

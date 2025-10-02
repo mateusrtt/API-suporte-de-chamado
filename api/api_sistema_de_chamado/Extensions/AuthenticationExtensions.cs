@@ -1,5 +1,7 @@
-﻿using Domain.Exceptions;
+﻿using Application.Configurations;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -9,7 +11,7 @@ namespace Api.Extensions
     /// Extensão para configuração de autenticação JWT na aplicação.
     /// </summary>
     /// <remarks>
-    /// - Valida a chave de assinatura do token (IssuerSigningKey) usando a chave definida em "AppSettings:Token".
+    /// - Valida a chave de assinatura do token (IssuerSigningKey) usando a chave definida em "JwtConfig:Token".
     /// - Não valida issuer ou audience, considerando a aplicação interna.
     /// - Lança exceções personalizadas para cada evento:
     ///   - NaoAutorizadoException ao desafiar (token inválido ou ausente).
@@ -27,6 +29,9 @@ namespace Api.Extensions
         /// <returns>IServiceCollection com a autenticação JWT configurada, permitindo encadeamento de chamadas.</returns>
         public static IServiceCollection AddCustomJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            var jwtConfig = new JwtConfig();
+            configuration.GetSection("JwtConfig").Bind(jwtConfig);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -34,7 +39,7 @@ namespace Api.Extensions
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!)
+                            Encoding.UTF8.GetBytes(jwtConfig.Token)
                         ),
                         ValidateAudience = false,
                         ValidateIssuer = false,

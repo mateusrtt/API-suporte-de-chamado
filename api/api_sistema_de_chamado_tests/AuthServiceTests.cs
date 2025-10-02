@@ -14,16 +14,19 @@ namespace Api_tests
 
         private readonly Mock<IUsuarioRepository> _usuarioRepoMock;
         private readonly Mock<ISenha> _senhaMock;
+        private readonly Mock<IToken> _tokenMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _usuarioRepoMock = new Mock<IUsuarioRepository>();
             _senhaMock = new Mock<ISenha>();
+            _tokenMock = new Mock<IToken>();
 
             _authService = new AuthService(
               _usuarioRepoMock.Object,
-              _senhaMock.Object
+              _senhaMock.Object,
+              _tokenMock.Object
           );
         }
 
@@ -41,7 +44,7 @@ namespace Api_tests
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(true);
-            _senhaMock.Setup(x => x.CriarToken(usuario)).Returns("fake-jwt-token");
+            _tokenMock.Setup(x => x.CriarToken(usuario)).Returns("fake-jwt-token");
 
             // Act
             var resultado = await _authService.Login(dto);
