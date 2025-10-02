@@ -19,7 +19,7 @@ namespace Application.Services
         }
         public async Task<ChamadoLeituraDto> FazerChamadoAsync(FazerChamadoDto dto, int usuarioId)
         {
-            int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricaoAsync(dto.Descricao);
+            int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricao(dto.Descricao);
             if (!Enum.IsDefined(typeof(PrioridadeEnum), prioridadeNumero))
                 prioridadeNumero = (int)PrioridadeEnum.Analisando;
 

@@ -1,5 +1,6 @@
-﻿using Application.Services;
+﻿using Application.Interface;
 using Domain.Enums;
+using Infrastructure.OpenIA;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
@@ -11,7 +12,6 @@ namespace Api_tests
 {
     public class OpenAiServiceTests
     {
-        // Classe interna usada para simular o comportamento do HttpClient
         private class HttpMessageHandlerMock : HttpMessageHandler
         {
             private readonly HttpResponseMessage _fakeResponse;
@@ -25,6 +25,14 @@ namespace Api_tests
             {
                 return Task.FromResult(_fakeResponse);
             }
+        }
+
+        private IPrompt CriarPromptMock()
+        {
+            var promptMock = new Mock<IPrompt>();
+            promptMock.Setup(p => p.GerarPrompt(It.IsAny<string>()))
+                      .Returns("prompt fake para testes");
+            return promptMock.Object;
         }
 
         [Theory]
@@ -56,10 +64,10 @@ namespace Api_tests
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["OpenAI:ApiKey"]).Returns("fake-api-key");
 
-            var service = new OpenAiService(httpClient, configMock.Object);
+            var service = new OpenIAService(httpClient, configMock.Object, CriarPromptMock());
 
             // Act
-            int prioridade = await service.ObterPrioridadePorDescricaoAsync(descricao);
+            int prioridade = await service.ObterPrioridadePorDescricao(descricao);
 
             // Assert
             Assert.Equal(prioridadeEsperada, prioridade);
@@ -82,10 +90,10 @@ namespace Api_tests
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["OpenAI:ApiKey"]).Returns("fake-api-key");
 
-            var service = new OpenAiService(httpClient, configMock.Object);
+            var service = new OpenIAService(httpClient, configMock.Object, CriarPromptMock());
 
             // Act
-            int prioridade = await service.ObterPrioridadePorDescricaoAsync("Teste");
+            int prioridade = await service.ObterPrioridadePorDescricao("Teste");
 
             // Assert
             Assert.Equal((int)PrioridadeEnum.Analisando, prioridade);
@@ -108,10 +116,10 @@ namespace Api_tests
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["OpenAI:ApiKey"]).Returns("fake-api-key");
 
-            var service = new OpenAiService(httpClient, configMock.Object);
+            var service = new OpenIAService(httpClient, configMock.Object, CriarPromptMock());
 
             // Act
-            int prioridade = await service.ObterPrioridadePorDescricaoAsync("Teste");
+            int prioridade = await service.ObterPrioridadePorDescricao("Teste");
 
             // Assert
             Assert.Equal((int)PrioridadeEnum.Analisando, prioridade);
@@ -143,10 +151,10 @@ namespace Api_tests
             var configMock = new Mock<IConfiguration>();
             configMock.Setup(c => c["OpenAI:ApiKey"]).Returns("fake-api-key");
 
-            var service = new OpenAiService(httpClient, configMock.Object);
+            var service = new OpenIAService(httpClient, configMock.Object, CriarPromptMock());
 
             // Act
-            int prioridade = await service.ObterPrioridadePorDescricaoAsync("Teste");
+            int prioridade = await service.ObterPrioridadePorDescricao("Teste");
 
             // Assert
             Assert.Equal((int)PrioridadeEnum.Analisando, prioridade);

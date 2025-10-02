@@ -30,7 +30,7 @@ namespace Api_tests
             int usuarioId = 1;
 
             _openAiServiceMock
-                .Setup(s => s.ObterPrioridadePorDescricaoAsync(dto.Descricao))
+                .Setup(s => s.ObterPrioridadePorDescricao(dto.Descricao))
                 .ReturnsAsync((int)PrioridadeEnum.Alta);
 
             _chamadoRepositoryMock.Setup(r => r.AdicionarAsync(It.IsAny<Chamado>()));

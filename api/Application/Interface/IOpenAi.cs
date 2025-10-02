@@ -2,6 +2,6 @@
 {
     public interface IOpenAi
     {
-        Task<int> ObterPrioridadePorDescricaoAsync(string descricao);
+        Task<int> ObterPrioridadePorDescricao(string descricao);
     }
 }

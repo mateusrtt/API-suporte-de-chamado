@@ -9,6 +9,8 @@ using Application.Services;
 using Infrastructure.Data;
 using Application.Configurations;
 using Microsoft.Extensions.Options;
+using Infrastructure.OpenIA;
+using Infrastructure.OpenIA.Prompt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,8 @@ builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
 builder.Services.AddScoped<IAcessoLogRepository, AcessoLogRepository>();
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<ISenha, SenhaService>();
-builder.Services.AddHttpClient<IOpenAi, OpenAiService>();
+builder.Services.AddHttpClient<IOpenAi, OpenIAService>();
+builder.Services.AddScoped<IPrompt, GeradorPromptPrioridade>();
 builder.Services.AddScoped<IChamado, ChamadoService>();
 builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
 builder.Services.AddScoped<IToken, TokenService>();
