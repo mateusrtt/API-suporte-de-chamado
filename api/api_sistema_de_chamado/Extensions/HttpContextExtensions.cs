@@ -2,22 +2,8 @@
 
 namespace Api.Extensions
 {
-    /// <summary>
-    /// Extensão para HttpContext que facilita a extração de informações do usuário autenticado.
-    /// Permite recuperar o ID, nome e e-mail do usuário a partir do contexto HTTP ou de DTOs específicos.
-    /// </summary>
-    /// <remarks>
-    /// - ExtrairUsuario: retorna dados básicos do usuário a partir do HttpContext.
-    /// - ExtrairUsuarioDeDto: retorna dados equivalentes a partir de objetos DTO conhecidos (UsuarioLoginRespostaDto, UsuarioLeituraDto).
-    /// - Caso o usuário não esteja autenticado ou o DTO não seja reconhecido, valores padrão são retornados.
-    /// </remarks>
     public static class HttpContextExtensions
     {
-        /// <summary>
-        /// Extrai informações do usuário a partir do HttpContext.
-        /// </summary>
-        /// <param name="context">O HttpContext da requisição atual.</param>
-        /// <returns>Tupla contendo Id (nullable), Nome e Email do usuário.</returns>
         public static (int? Id, string Nome, string Email) ExtrairUsuario(this HttpContext context)
         {
             int? usuarioId = null;
@@ -34,11 +20,6 @@ namespace Api.Extensions
             return (usuarioId, nome, email);
         }
 
-        /// <summary>
-        /// Extrai informações do usuário a partir de um DTO específico.
-        /// </summary>
-        /// <param name="dto">Objeto DTO que contém informações do usuário.</param>
-        /// <returns>Tupla contendo Id (nullable), Nome e Email do usuário.</returns>
         public static (int? Id, string Nome, string Email) ExtrairUsuarioDeDto(this object dto)
         {
             return dto switch
