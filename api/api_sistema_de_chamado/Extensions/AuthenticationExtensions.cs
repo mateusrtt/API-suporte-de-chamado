@@ -1,20 +1,28 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Application.Configurations;
+using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Text;
 
-namespace api_sistema_de_chamado.Extensions
+namespace Api.Extensions
 {
     public static class AuthenticationExtensions
     {
         public static IServiceCollection AddCustomJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            var jwtConfig = new JwtConfig();
+            configuration.GetSection("JwtConfig").Bind(jwtConfig);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!)),
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtConfig.Token)
+                        ),
                         ValidateAudience = false,
                         ValidateIssuer = false,
                     };
@@ -24,29 +32,15 @@ namespace api_sistema_de_chamado.Extensions
                         OnChallenge = context =>
                         {
                             context.HandleResponse();
-                            context.Response.StatusCode = 401;
-                            context.Response.ContentType = "application/json";
-                            var json = """
-                            {
-                                "status": false,
-                                "mensagem": "Token inválido ou não autorizado.",
-                                "dados": null
-                            }
-                            """;
-                            return context.Response.WriteAsync(json);
+                            throw new ExcecaoJwt(HttpStatusCode.Unauthorized, "Token inválido ou não autorizado.");
                         },
                         OnForbidden = context =>
                         {
-                            context.Response.StatusCode = 403;
-                            context.Response.ContentType = "application/json";
-                            var json = """
-                            {
-                                "status": false,
-                                "mensagem": "Você não tem permissão para acessar esta funcionalidade.",
-                                "dados": null
-                            }
-                            """;
-                            return context.Response.WriteAsync(json);
+                            throw new ExcecaoJwt(HttpStatusCode.Forbidden, "Você não tem permissão para acessar esta funcionalidade.");
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            throw new ExcecaoJwt(HttpStatusCode.ServiceUnavailable, "Falha ao processar o token JWT.");
                         }
                     };
                 });

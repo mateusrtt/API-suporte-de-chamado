@@ -1,42 +1,39 @@
-﻿using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Services.AuthService;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Application.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Application.Dtos;
+using Api.Attributes;
 
-namespace api_sistema_de_chamado.Controllers
+namespace Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Controller responsável pelos endpoints de autenticação da aplicação.
+    /// Permite realizar login de usuários.
+    /// </summary>
+    [Route("suporte/v1/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthInterface _authService;
-        public AuthController(IAuthInterface authService)
+        /// <summary>
+        /// Construtor que injeta o serviço de autenticação.
+        /// </summary>
+        /// <param name="authService">Serviço de autenticação (IAuth) usado para processar login.</param>
+        private readonly IAuth _authService;
+        public AuthController(IAuth authService)
         {
             _authService = authService;
         }
 
-        [HttpPost("register-user")]
-        public async Task<ActionResult> RegisterUser([FromBody] UsuarioCriacaoDto dto)
-        {
-            var resultado = await _authService.RegistrarUsuario(dto);
-            return Ok(resultado);
-        }
-
-        [Authorize(Roles = "Administrador")]
-        [HttpPost("register-admin")]
-        public async Task<ActionResult> RegisterAdmin([FromBody] UsuarioCriacaoDto dto)
-        {
-            var resultado = await _authService.RegistrarAdmin(dto);
-            return Ok(resultado);
-        }
-
+        /// <summary>
+        /// Realiza login do usuário.
+        /// </summary>
+        /// <param name="usuarioLogin">DTO contendo email/username e senha do usuário.</param>
+        /// <returns>Retorna um ActionResult com os dados do login, encapsulados pelo filtro de sucesso.</returns>
         [HttpPost("login")]
+        [MensagemSucessoAtributo("Login realizado com sucesso!")]
         public async Task<ActionResult> Login(UsuarioLoginDto usuarioLogin)
         {
-            var resposta = await _authService.Login(usuarioLogin);
-            return Ok(resposta);
+            var resultado = await _authService.Login(usuarioLogin);
+            return Ok(resultado);
         }
     }
 }

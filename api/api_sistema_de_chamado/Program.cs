@@ -1,32 +1,54 @@
-using api_sistema_de_chamado.Data;
-using api_sistema_de_chamado.Repositories.Chamado;
-using api_sistema_de_chamado.Repositories.Usuario;
-using api_sistema_de_chamado.Services.AuthService;
-using api_sistema_de_chamado.Services.ChamadoService;
-using api_sistema_de_chamado.Services.OpenAiService;
-using api_sistema_de_chamado.Services.SenhaService;
 using Microsoft.EntityFrameworkCore;
-using api_sistema_de_chamado.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Api.Extensions;
+using Api.Filters;
+using Domain.Interfaces;
+using Infrastructure.Repositories;
+using Application.Interface;
+using Application.Services;
+using Infrastructure.Data;
+using Application.Configurations;
+using Microsoft.Extensions.Options;
+using Infrastructure.OpenIA;
+using Infrastructure.OpenIA.Prompt;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configura Controllers e enums como string
-builder.Services.AddCustomControllers();
-builder.Services.AddEndpointsApiExplorer();
-
 // Repositórios e serviços
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuario, UsuarioService>();
 builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
-builder.Services.AddScoped<IAuthInterface, AuthService>();
-builder.Services.AddScoped<ISenhaInterface, SenhaService>();
-builder.Services.AddHttpClient<IOpenAiInterface, OpenAiService>();
-builder.Services.AddScoped<IChamadoInterface, ChamadoService>();
+builder.Services.AddScoped<IAcessoLogRepository, AcessoLogRepository>();
+builder.Services.AddScoped<IAuth, AuthService>();
+builder.Services.AddScoped<ISenha, SenhaService>();
+builder.Services.AddHttpClient<IOpenAi, OpenIAService>();
+builder.Services.AddScoped<IPrompt, GeradorPromptPrioridade>();
+builder.Services.AddScoped<IChamado, ChamadoService>();
+builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
+builder.Services.AddScoped<IToken, TokenService>();
+builder.Services.AddScoped<FiltroLogAcesso>();
+builder.Services.AddScoped<FiltroRespostaSucesso>();
 builder.Services.AddCustomCors();
+builder.Services.AddHttpContextAccessor();
+
+// Bind da configuração JWT
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
 // Banco de dados
 builder.Services.AddDbContext<AppDbContext>(Options =>
 {
     Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddCustomControllers(options =>
+{
+    options.Filters.Add<FiltroRespostaSucesso>();
+    options.Filters.Add<FiltroLogAcesso>();
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
 });
 
 // Autenticação JWT
@@ -36,6 +58,8 @@ builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UsarMiddlewareDeExcecao();
 
 if (app.Environment.IsDevelopment())
 {

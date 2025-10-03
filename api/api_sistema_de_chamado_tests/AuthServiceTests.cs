@@ -1,79 +1,33 @@
-using api_sistema_de_chamado.Dtos;
-using api_sistema_de_chamado.Enum;
-using api_sistema_de_chamado.Models;
-using api_sistema_de_chamado.Repositories.Usuario;
-using api_sistema_de_chamado.Services.AuthService;
-using api_sistema_de_chamado.Services.SenhaService;
+using Application.Dtos;
+using Application.Services;
+using Application.Interface;
+using Domain.Enums;
+using Domain.Interfaces;
+using Domain.Models;
 using Moq;
+using Domain.Exceptions;
 
-namespace api_sistema_de_chamado_tests
+namespace Api_tests
 {
     public class AuthServiceTests
     {
 
         private readonly Mock<IUsuarioRepository> _usuarioRepoMock;
-        private readonly Mock<ISenhaInterface> _senhaMock;
+        private readonly Mock<ISenha> _senhaMock;
+        private readonly Mock<IToken> _tokenMock;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
         {
             _usuarioRepoMock = new Mock<IUsuarioRepository>();
-            _senhaMock = new Mock<ISenhaInterface>();
-            _authService = new AuthService(_usuarioRepoMock.Object, _senhaMock.Object);
-        }
+            _senhaMock = new Mock<ISenha>();
+            _tokenMock = new Mock<IToken>();
 
-        [Fact]
-        public async Task RegistrarUsuario_DeveRetornarSucesso_SeDadosValidos()
-        {
-            // Arrange
-            var dto = new UsuarioCriacaoDto
-            {
-                Nome = "Mateus",
-                Email = "mateus@email.com",
-                Senha = "123456",
-                ConfirmarSenha = "123456"
-            };
-
-            _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(true);
-
-            _senhaMock.Setup(x => x.CriarSenhaHash(dto.Senha, out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny))
-                .Callback((string s, out byte[] senhaHash, out byte[] senhaSalt) =>
-                {
-                    senhaHash = new byte[1];
-                    senhaSalt = new byte[1];
-                });
-
-            _usuarioRepoMock.Setup(x => x.AdicionarAsync(It.IsAny<UsuariosModel>())).Returns(Task.CompletedTask);
-            _usuarioRepoMock.Setup(x => x.SalvarAsync()).Returns(Task.CompletedTask);
-
-            // Act
-            var resultado = await _authService.RegistrarUsuario(dto);
-
-            // Assert
-            Assert.True(resultado.Status); // Deve retornar sucesso
-            Assert.Equal("Usuário cadastrado com sucesso!", resultado.Mensagem);
-        }
-
-        [Fact]
-        public async Task RegistrarUsuario_DeveFalhar_SeUsuarioExistir()
-        {
-            //Arrange
-            var dto = new UsuarioCriacaoDto
-            {
-                Nome = "João",
-                Email = "joao@email.com",
-                Senha = "123456",
-                ConfirmarSenha = "123456"
-            };
-
-            _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(false);
-
-            // Act
-            var resultado = await _authService.RegistrarUsuario(dto);
-
-            // Assert
-            Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Email/usuário já cadastrados!", resultado.Mensagem);
+            _authService = new AuthService(
+              _usuarioRepoMock.Object,
+              _senhaMock.Object,
+              _tokenMock.Object
+          );
         }
 
         [Fact]
@@ -86,47 +40,33 @@ namespace api_sistema_de_chamado_tests
                 Senha = "senha"
             };
 
-            var usuario = new UsuariosModel
-            {
-                Nome = "Teste",
-                Email = dto.Email,
-                Cargo = CargoEnum.Usuario,
-                SenhaHash = new byte[1],
-                SenhaSalt = new byte[1]
-            };
+            var usuario = new Usuario("Teste", dto.Email, CargoEnum.Usuario, new byte[1], new byte[1], true);
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
-
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(true);
-
-            _senhaMock.Setup(x => x.CriarToken(usuario)).Returns("fake-jwt-token");
+            _tokenMock.Setup(x => x.CriarToken(usuario)).Returns("fake-jwt-token");
 
             // Act
             var resultado = await _authService.Login(dto);
 
             // Assert
-            Assert.True(resultado.Status); 
-            Assert.Equal("fake-jwt-token", resultado.Dados); // Token retornado
+            Assert.NotNull(resultado);
+            Assert.Equal("fake-jwt-token", resultado.Token);
+            Assert.Equal(usuario.Nome, resultado.Usuario.Nome);
+            Assert.Equal(usuario.Email.ToLower(), resultado.Usuario.Email);
         }
 
         [Fact]
         public async Task Login_Deve_Falhar_Se_Usuario_Nao_Encontrado()
         {
             // Arrange
-            var dto = new UsuarioLoginDto
-            {
-                Email = "teste@email.com",
-                Senha = "senha"
-            };
+            var dto = new UsuarioLoginDto { Email = "teste@email.com", Senha = "senha" };
 
-            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync((UsuariosModel?)null);
+            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync((Usuario?)null);
 
-            // Act
-            var resultado = await _authService.Login(dto);
-
-            // Assert
-            Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Email invalido!", resultado.Mensagem);
+            // Act Assert
+            var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _authService.Login(dto));
+            Assert.Equal("Email inválido!", ex.Message);
         }
 
         [Fact]
@@ -139,25 +79,21 @@ namespace api_sistema_de_chamado_tests
                 Senha = "senhaerrada"
             };
 
-            var usuario = new UsuariosModel
-            {
-                Nome = "Teste",
-                Email = dto.Email,
-                Cargo = CargoEnum.Usuario,
-                SenhaHash = new byte[1],  
-                SenhaSalt = new byte[1]
-            };
+            var usuario = new Usuario(
+                "Teste",
+                dto.Email,
+                CargoEnum.Usuario,
+                new byte[1],  
+                new byte[1],
+                true
+            );
 
             _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
-
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(false);
 
-            // Act
-            var resultado = await _authService.Login(dto);
-
-            // Assert
-            Assert.False(resultado.Status); // Deve falhar
-            Assert.Equal("Senha invalido!", resultado.Mensagem);
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<ValidacaoException>(() => _authService.Login(dto));
+            Assert.Equal("Senha inválida!", ex.Message);
         }
     }
 }
