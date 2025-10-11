@@ -25,17 +25,17 @@ namespace Api.Middlewares
             {
                 await _next(context);
             }
-            catch (ExcecaoAplicacao ex)
+            catch (ExcecaoDominio ex)
             {
                 _logger.LogWarning(ex, "Erro controlado.");
-                var mensagem = _env.IsDevelopment() ? ex.Message : "Ocorreu um erro na requisição.";
+                var mensagem = ex.Message;
                 await HandleExceptionAsync(context, ex.StatusCode, mensagem);
             }
-            catch (ExcecaoJwt ex)
+            catch (ExcecaoInfraestrutura ex) 
             {
-                _logger.LogWarning(ex, "Erro de autenticação/autorização JWT.");
-                var mensagem = _env.IsDevelopment() ? ex.Message : "Falha de autenticação ou autorização.";
-                await HandleExceptionAsync(context, ex.StatusCode, ex.Message);
+                _logger.LogError(ex, "Erro de infraestrutura.");
+                var mensagem = _env.IsDevelopment() ? ex.Message : "Ocorreu um erro no servidor."; 
+                await HandleExceptionAsync(context, ex.StatusCode, mensagem);
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
+using Infrastructure.Exceptions;
 
 namespace Infrastructure.Repositories
 {
@@ -31,7 +32,17 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> SalvarAsync()
         {
-            return await _context.SaveChangesAsync() > 0;
+            try
+            {
+                var resultado = await _context.SaveChangesAsync();
+                if (resultado <= 0)
+                    throw new PersistenciaException("Nenhuma alteração foi salva no banco de dados.");
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                throw new BancoDeDadosException("Erro ao salvar alterações no banco.");
+            }
         }
 
         public async Task<Chamado?> ObterIdAsync(int id)

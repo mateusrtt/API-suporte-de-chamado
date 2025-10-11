@@ -1,5 +1,6 @@
 ﻿using Application.Dtos;
 using Application.Interface;
+using Application.Utils;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -19,10 +20,11 @@ namespace Application.Services
         }
         public async Task<ChamadoLeituraDto> FazerChamadoAsync(FazerChamadoDto dto, int usuarioId)
         {
-            int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricao(dto.Descricao);
-            if (!Enum.IsDefined(typeof(PrioridadeEnum), prioridadeNumero))
-                prioridadeNumero = (int)PrioridadeEnum.Analisando;
+            if (!await VerificarConexao.TemInternet())
+                throw new ServicoIndisponivelException("Sem conexão com a internet. Verifique e tente novamente.");
 
+            int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricao(dto.Descricao);
+            
             var chamado = new Chamado(dto.Descricao, usuarioId, (PrioridadeEnum)prioridadeNumero);
 
             await _chamadoRepository.AdicionarAsync(chamado);

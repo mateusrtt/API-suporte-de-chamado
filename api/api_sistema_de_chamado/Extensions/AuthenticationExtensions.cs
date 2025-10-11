@@ -1,5 +1,5 @@
 ﻿using Application.Configurations;
-using Infrastructure.Exceptions;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
@@ -32,7 +32,7 @@ namespace Api.Extensions
                         OnChallenge = context =>
                         {
                             context.HandleResponse();
-                            throw new ExcecaoJwt(HttpStatusCode.Unauthorized, "Token inválido ou não autorizado.");
+                            throw new ExcecaoJwt("Token inválido ou não autorizado.");
                         },
                         OnForbidden = context =>
                         {

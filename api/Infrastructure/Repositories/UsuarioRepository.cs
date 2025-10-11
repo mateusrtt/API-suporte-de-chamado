@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using Domain.Models;
 using Infrastructure.Data;
+using Infrastructure.Exceptions;
 
 namespace Infrastructure.Repositories
 {
@@ -26,7 +27,16 @@ namespace Infrastructure.Repositories
 
         public async Task SalvarAsync()
         {
-            await _context.SaveChangesAsync();
+            try
+            {
+                var resultado = await _context.SaveChangesAsync();
+                if (resultado <= 0)
+                    throw new PersistenciaException("Nenhuma alteração foi salva no banco de dados.");
+            }
+            catch (DbUpdateException)
+            {
+                throw new BancoDeDadosException("Erro ao salvar alterações no banco.");
+            }
         }
 
         public async Task<Usuario?> ObterPorEmailAsync(string email)
