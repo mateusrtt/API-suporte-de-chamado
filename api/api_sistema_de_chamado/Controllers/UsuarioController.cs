@@ -34,7 +34,7 @@ namespace Api.Controllers
         [MensagemSucessoAtributo("Usuário cadastrado com sucesso!")]
         public async Task<ActionResult> RegistrarUsuario([FromBody] UsuarioCriacaoDto dto)
         {
-            var resultado = await _usuarioService.Registrar(dto, registrarLog: true);
+            var resultado = await _usuarioService.Registrar(dto);
             return Ok(resultado);
         }
 

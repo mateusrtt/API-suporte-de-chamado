@@ -22,7 +22,7 @@ namespace Application.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo = CargoEnum.Usuario, bool registrarLog = true)
+        public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo = CargoEnum.Usuario)
         {
             var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(usuarioRegistro.Email.ToLower());
             if (usuarioExistente != null)
