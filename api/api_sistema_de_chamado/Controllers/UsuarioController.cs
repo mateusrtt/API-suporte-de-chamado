@@ -1,7 +1,6 @@
 ﻿using Api.Attributes;
 using Application.Dtos;
 using Application.Interface;
-using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,21 +34,7 @@ namespace Api.Controllers
         [MensagemSucessoAtributo("Usuário cadastrado com sucesso!")]
         public async Task<ActionResult> RegistrarUsuario([FromBody] UsuarioCriacaoDto dto)
         {
-            var resultado = await _usuarioService.Registrar(dto, CargoEnum.Usuario, registrarLog: true);
-            return Ok(resultado);
-        }
-
-        /// <summary>
-        /// Registra um administrador (apenas para usuários com perfil Administrador).
-        /// </summary>
-        /// <param name="dto">DTO contendo os dados do administrador a ser registrado.</param>
-        /// <returns>ActionResult com o administrador criado.</returns>
-        [HttpPost("admin")]
-        [Authorize(Roles = "Administrador")]
-        [MensagemSucessoAtributo("Administrador cadastrado com sucesso!")]
-        public async Task<ActionResult> RegistrarAdmin([FromBody] UsuarioCriacaoDto dto)
-        {
-            var resultado = await _usuarioService.Registrar(dto, CargoEnum.Administrador, registrarLog: false);
+            var resultado = await _usuarioService.Registrar(dto, registrarLog: true);
             return Ok(resultado);
         }
 

@@ -16,11 +16,11 @@ namespace Domain.Models
 
         protected Chamado() { }
 
-        public Chamado(string descricao, int usuarioId, PrioridadeEnum prioridade)
+        public Chamado(string descricao, int usuarioId)
         {
             DefinirDescricao(descricao);
             DefinirUsuario(usuarioId);
-            DefinirPrioridade(prioridade);
+            Prioridade = PrioridadeEnum.Analisando;
             Status = StatusChamadoEnum.Pendente;
             ChamadoDataCriacao = DateTime.Now;
         }
@@ -49,6 +49,12 @@ namespace Domain.Models
                 prioridade = PrioridadeEnum.Analisando;
 
             Prioridade = prioridade;
+        }
+
+        public void AtualizarPrioridade(PrioridadeEnum prioridadeSugestao)
+        {
+            if (prioridadeSugestao != PrioridadeEnum.Analisando)
+                DefinirPrioridade(prioridadeSugestao);
         }
 
         public void Responder(string resposta)

@@ -68,7 +68,8 @@ namespace Api_tests
             int chamadoId = 1;
             var dto = new ResponderChamadoDto { Resposta = "Resolvido" };
 
-            var chamado = new Chamado("Erro de login", 1, PrioridadeEnum.Baixa);
+            var chamado = new Chamado("Erro de login", 1);
+            chamado.AtualizarPrioridade(PrioridadeEnum.Baixa);
 
             _chamadoRepositoryMock.Setup(r => r.ObterIdAsync(chamadoId))
                                   .ReturnsAsync(chamado);
@@ -93,9 +94,11 @@ namespace Api_tests
             // Arrange
             var chamados = new List<Chamado>
             {
-                new Chamado("Erro 1", usuarioId, PrioridadeEnum.Alta),
-                new Chamado("Erro 2", usuarioId, PrioridadeEnum.Baixa)
+                new Chamado("Erro 1", usuarioId),
+                new Chamado("Erro 2", usuarioId)
             };
+            chamados[0].AtualizarPrioridade(PrioridadeEnum.Alta);
+            chamados[1].AtualizarPrioridade(PrioridadeEnum.Baixa);
 
             _chamadoRepositoryMock.Setup(r => r.ObterPorUsuarioAsync(usuarioId))
                                   .ReturnsAsync(chamados);
@@ -115,9 +118,11 @@ namespace Api_tests
             // Arrange
             var chamados = new List<Chamado>
             {
-                new Chamado("Erro 1", 1, PrioridadeEnum.Alta),
-                new Chamado("Erro 2", 2, PrioridadeEnum.Baixa)
+                new Chamado("Erro 1", 1),
+                new Chamado("Erro 2", 2)
             };
+            chamados[0].AtualizarPrioridade(PrioridadeEnum.Alta);
+            chamados[1].AtualizarPrioridade(PrioridadeEnum.Baixa);
 
             _chamadoRepositoryMock.Setup(r => r.ObterTodosAsync())
                                   .ReturnsAsync(chamados);

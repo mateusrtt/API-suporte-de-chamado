@@ -23,9 +23,11 @@ namespace Application.Services
             if (!await VerificarConexao.TemInternet())
                 throw new ServicoIndisponivelException("Sem conexão com a internet. Verifique e tente novamente.");
 
+            var chamado = new Chamado(dto.Descricao, usuarioId);
+
             int prioridadeNumero = await _openAiService.ObterPrioridadePorDescricao(dto.Descricao);
-            
-            var chamado = new Chamado(dto.Descricao, usuarioId, (PrioridadeEnum)prioridadeNumero);
+
+            chamado.AtualizarPrioridade((PrioridadeEnum)prioridadeNumero);
 
             await _chamadoRepository.AdicionarAsync(chamado);
             await _chamadoRepository.SalvarAsync();

@@ -22,7 +22,7 @@ namespace Application.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo, bool registrarLog = true)
+        public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo = CargoEnum.Usuario, bool registrarLog = true)
         {
             var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(usuarioRegistro.Email.ToLower());
             if (usuarioExistente != null)
@@ -35,6 +35,10 @@ namespace Application.Services
                 throw new ValidacaoException("Senha e confirmação não coincidem");
 
             _senhaInterface.CriarSenhaHash(usuarioRegistro.Senha, out byte[] senhaHash, out byte[] senhaSalt);
+
+            var usuarioLogado = _httpContextAccessor.HttpContext?.User;
+            if (usuarioLogado != null && usuarioLogado.IsInRole("Administrador"))
+                cargo = CargoEnum.Administrador;
 
             Usuario usuario = new Usuario(
                 usuarioRegistro.Nome,
