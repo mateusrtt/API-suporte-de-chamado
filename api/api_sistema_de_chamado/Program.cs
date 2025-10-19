@@ -8,7 +8,6 @@ using Application.Interface;
 using Application.Services;
 using Infrastructure.Data;
 using Application.Configurations;
-using Microsoft.Extensions.Options;
 using Infrastructure.OpenIA;
 using Infrastructure.OpenIA.Prompt;
 

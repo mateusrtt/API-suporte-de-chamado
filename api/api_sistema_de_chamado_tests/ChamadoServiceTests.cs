@@ -33,11 +33,11 @@ namespace Api_tests
                 .Setup(s => s.ObterPrioridadePorDescricao(dto.Descricao))
                 .ReturnsAsync((int)PrioridadeEnum.Alta);
 
-            _chamadoRepositoryMock.Setup(r => r.AdicionarAsync(It.IsAny<Chamado>()));
-            _chamadoRepositoryMock.Setup(r => r.SalvarAsync());
+            _chamadoRepositoryMock.Setup(r => r.Adicionar(It.IsAny<Chamado>()));
+            _chamadoRepositoryMock.Setup(r => r.Salvar());
 
             // Act
-            var result = await _service.FazerChamadoAsync(dto, usuarioId);
+            var result = await _service.FazerChamado(dto, usuarioId);
 
             // Assert
             Assert.NotNull(result);
@@ -53,11 +53,11 @@ namespace Api_tests
             int chamadoId = 1;
             var dto = new ResponderChamadoDto { Resposta = "Resolvido" };
 
-            _chamadoRepositoryMock.Setup(r => r.ObterIdAsync(chamadoId))
+            _chamadoRepositoryMock.Setup(r => r.ObterId(chamadoId))
                                   .ReturnsAsync((Chamado?)null);
 
             // Act & Assert
-            var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _service.ResponderChamadoAsync(chamadoId, dto));
+            var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _service.ResponderChamado(chamadoId, dto));
             Assert.Equal("Chamado não encontrado.", ex.Message);
         }
 
@@ -71,14 +71,14 @@ namespace Api_tests
             var chamado = new Chamado("Erro de login", 1);
             chamado.AtualizarPrioridade(PrioridadeEnum.Baixa);
 
-            _chamadoRepositoryMock.Setup(r => r.ObterIdAsync(chamadoId))
+            _chamadoRepositoryMock.Setup(r => r.ObterId(chamadoId))
                                   .ReturnsAsync(chamado);
 
-            _chamadoRepositoryMock.Setup(r => r.AtualizarAsync(It.IsAny<Chamado>()));
-            _chamadoRepositoryMock.Setup(r => r.SalvarAsync());
+            _chamadoRepositoryMock.Setup(r => r.Atualizar(It.IsAny<Chamado>()));
+            _chamadoRepositoryMock.Setup(r => r.Salvar());
 
             // Act
-            var result = await _service.ResponderChamadoAsync(chamadoId, dto);
+            var result = await _service.ResponderChamado(chamadoId, dto);
 
             // Assert
             Assert.NotNull(result);
@@ -100,11 +100,11 @@ namespace Api_tests
             chamados[0].AtualizarPrioridade(PrioridadeEnum.Alta);
             chamados[1].AtualizarPrioridade(PrioridadeEnum.Baixa);
 
-            _chamadoRepositoryMock.Setup(r => r.ObterPorUsuarioAsync(usuarioId))
+            _chamadoRepositoryMock.Setup(r => r.ObterPorUsuario(usuarioId))
                                   .ReturnsAsync(chamados);
 
             // Act
-            var result = await _service.ListarChamadosPorUsuarioAsync(usuarioId);
+            var result = await _service.ListarChamadosPorUsuario(usuarioId);
 
             // Assert
             Assert.NotNull(result);
@@ -124,11 +124,11 @@ namespace Api_tests
             chamados[0].AtualizarPrioridade(PrioridadeEnum.Alta);
             chamados[1].AtualizarPrioridade(PrioridadeEnum.Baixa);
 
-            _chamadoRepositoryMock.Setup(r => r.ObterTodosAsync())
+            _chamadoRepositoryMock.Setup(r => r.ObterTodos())
                                   .ReturnsAsync(chamados);
 
             // Act
-            var result = await _service.ListarTodosOsChamadosAsync();
+            var result = await _service.ListarTodosOsChamados();
 
             // Assert
             Assert.NotNull(result);

@@ -24,8 +24,7 @@ namespace Application.Services
 
         public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo = CargoEnum.Usuario)
         {
-            var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(usuarioRegistro.Email.ToLower());
-            if (usuarioExistente != null)
+            if (await _usuarioRepository.EmailJaCadastrado(usuarioRegistro.Email))
                 throw new ConflitoException("Email já cadastrado.");
 
             if (string.IsNullOrWhiteSpace(usuarioRegistro.Senha) || !Regex.IsMatch(usuarioRegistro.Senha, @"^.{5,10}$"))
@@ -49,8 +48,8 @@ namespace Application.Services
                 usuarioRegistro.AceitouPoliticaPrivacidade
             );
 
-            await _usuarioRepository.AdicionarAsync(usuario);
-            await _usuarioRepository.SalvarAsync();
+            await _usuarioRepository.Adicionar(usuario);
+            await _usuarioRepository.Salvar();
 
             return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
         }
@@ -60,7 +59,7 @@ namespace Application.Services
             if (id != usuarioLogadoId)
                 throw new NaoAutorizadoException("Você só pode atualizar seus próprios dados.");
 
-            var usuario = await _usuarioRepository.ObterPorIdAsync(id);
+            var usuario = await _usuarioRepository.ObterPorId(id);
             if (usuario == null)
                 throw new NaoEncontradoException("Usuário não encontrado.");
 
@@ -69,7 +68,7 @@ namespace Application.Services
 
             if (!string.IsNullOrWhiteSpace(dto.Email))
             {
-                var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(dto.Email.ToLower());
+                var usuarioExistente = await _usuarioRepository.ObterPorEmail(dto.Email.ToLower());
                 if (usuarioExistente != null && usuarioExistente.Id != usuario.Id)
                     throw new ConflitoException("Este email já está em uso por outro usuário.");
 
@@ -92,11 +91,12 @@ namespace Application.Services
                     throw new ValidacaoException("A nova senha deve ter entre 5 e 10 caracteres");
 
                 _senhaInterface.CriarSenhaHash(novaSenha, out byte[] hash, out byte[] salt);
+
                 usuario.DefinirSenha(hash, salt);
             }
 
-            _usuarioRepository.Atualizar(usuario);
-            await _usuarioRepository.SalvarAsync();
+            await _usuarioRepository.Atualizar(usuario);
+            await _usuarioRepository.Salvar();
 
             return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
         }
@@ -106,12 +106,12 @@ namespace Application.Services
             if (id != usuarioLogadoId)
                 throw new NaoAutorizadoException("Você só pode deletar sua própria conta.");
 
-            var usuario = await _usuarioRepository.ObterPorIdAsync(id);
+            var usuario = await _usuarioRepository.ObterPorId(id);
             if (usuario == null)
                 throw new NaoEncontradoException("Usuário não encontrado.");
 
             _usuarioRepository.Deletar(usuario);
-            await _usuarioRepository.SalvarAsync();
+            await _usuarioRepository.Salvar();
 
             return true;
         }

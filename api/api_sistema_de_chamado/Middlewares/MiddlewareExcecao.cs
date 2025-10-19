@@ -25,6 +25,12 @@ namespace Api.Middlewares
             {
                 await _next(context);
             }
+            catch (ExcecaoJwt ex)
+            {
+                _logger.LogWarning(ex, "Erro de autenticação.");
+                var mensagem = _env.IsDevelopment() ? ex.Message : "Falha na autenticação.";
+                await HandleExceptionAsync(context, ex.StatusCode, mensagem);
+            }
             catch (ExcecaoDominio ex)
             {
                 _logger.LogWarning(ex, "Erro controlado.");

@@ -38,7 +38,7 @@ namespace Api_tests
                 AceitouPoliticaPrivacidade = true
             };
 
-            _usuarioRepoMock.Setup(x => x.ExisteUsuarioOuEmailAsync(dto.Nome, dto.Email)).ReturnsAsync(true);
+            _usuarioRepoMock.Setup(x => x.EmailJaCadastrado(It.IsAny<string>())).ReturnsAsync(false);
 
             _senhaMock.Setup(x => x.CriarSenhaHash(dto.Senha, out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny))
                 .Callback((string s, out byte[] senhaHash, out byte[] senhaSalt) =>
@@ -47,8 +47,8 @@ namespace Api_tests
                     senhaSalt = new byte[1];
                 });
 
-            _usuarioRepoMock.Setup(x => x.AdicionarAsync(It.IsAny<Usuario>())).Returns(Task.CompletedTask);
-            _usuarioRepoMock.Setup(x => x.SalvarAsync()).Returns(Task.CompletedTask);
+            _usuarioRepoMock.Setup(x => x.Adicionar(It.IsAny<Usuario>())).Returns(Task.CompletedTask);
+            _usuarioRepoMock.Setup(x => x.Salvar()).Returns(Task.CompletedTask);
 
             // Act
             var resultado = await _usuarioService.Registrar(dto, CargoEnum.Usuario);
@@ -73,15 +73,7 @@ namespace Api_tests
                 AceitouPoliticaPrivacidade = true
             };
 
-            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email))
-                       .ReturnsAsync(new Usuario(
-                           "João",
-                           "joao@email.com",
-                           CargoEnum.Usuario,
-                           [1, 2, 3],
-                           [4, 5, 6],
-                           true
-                       ));
+            _usuarioRepoMock.Setup(x => x.EmailJaCadastrado(dto.Email)).ReturnsAsync(true);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<ConflitoException>(() => _usuarioService.Registrar(dto, CargoEnum.Usuario));
@@ -110,8 +102,8 @@ namespace Api_tests
             var dto = new UsuarioUpdateDto { Nome = "NovoNome" };
             var usuario = new Usuario("Mateus", "mateus@email.com", CargoEnum.Usuario, new byte[1], new byte[1], true);
 
-            _usuarioRepoMock.Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync(usuario);
-            _usuarioRepoMock.Setup(x => x.SalvarAsync()).Returns(Task.CompletedTask);
+            _usuarioRepoMock.Setup(x => x.ObterPorId(1)).ReturnsAsync(usuario);
+            _usuarioRepoMock.Setup(x => x.Salvar()).Returns(Task.CompletedTask);
 
             var resultado = await _usuarioService.Atualizar(1, dto, 1);
 
@@ -124,7 +116,7 @@ namespace Api_tests
         {
             var dto = new UsuarioUpdateDto { Nome = "NovoNome" };
 
-            _usuarioRepoMock.Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync((Usuario?)null);
+            _usuarioRepoMock.Setup(x => x.ObterPorId(1)).ReturnsAsync((Usuario?)null);
 
             var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _usuarioService.Atualizar(1, dto, 1));
             Assert.Equal("Usuário não encontrado.", ex.Message);
@@ -144,8 +136,8 @@ namespace Api_tests
         {
             var usuario = new Usuario("Mateus", "mateus@email.com", CargoEnum.Usuario, new byte[1], new byte[1], true);
 
-            _usuarioRepoMock.Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync(usuario);
-            _usuarioRepoMock.Setup(x => x.SalvarAsync()).Returns(Task.CompletedTask);
+            _usuarioRepoMock.Setup(x => x.ObterPorId(1)).ReturnsAsync(usuario);
+            _usuarioRepoMock.Setup(x => x.Salvar()).Returns(Task.CompletedTask);
 
             var resultado = await _usuarioService.Deletar(1, 1);
 
@@ -155,7 +147,7 @@ namespace Api_tests
         [Fact]
         public async Task DeletarUsuario_DeveFalhar_SeNaoEncontrarUsuario()
         {
-            _usuarioRepoMock.Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync((Usuario?)null);
+            _usuarioRepoMock.Setup(x => x.ObterPorId(1)).ReturnsAsync((Usuario?)null);
 
             var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _usuarioService.Deletar(1, 1));
             Assert.Equal("Usuário não encontrado.", ex.Message);
