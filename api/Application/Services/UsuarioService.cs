@@ -5,7 +5,6 @@ using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
-using System.Text.RegularExpressions;
 
 namespace Application.Services
 {
@@ -27,8 +26,7 @@ namespace Application.Services
             if (await _usuarioRepository.EmailJaCadastrado(usuarioRegistro.Email))
                 throw new ConflitoException("Email já cadastrado.");
 
-            if (string.IsNullOrWhiteSpace(usuarioRegistro.Senha) || !Regex.IsMatch(usuarioRegistro.Senha, @"^.{5,10}$"))
-                throw new ValidacaoException("Senha inválida: deve ter entre 5 e 10 caracteres");
+            Usuario.ValidarSenha(usuarioRegistro.Senha);
 
             if (usuarioRegistro.Senha != usuarioRegistro.ConfirmarSenha)
                 throw new ValidacaoException("Senha e confirmação não coincidem");
@@ -87,8 +85,7 @@ namespace Application.Services
                 if (novaSenha != confirmarSenha)
                     throw new ValidacaoException("A nova senha e a confirmação não conferem.");
 
-                if (string.IsNullOrWhiteSpace(novaSenha) || !Regex.IsMatch(novaSenha, @"^.{5,10}$"))
-                    throw new ValidacaoException("A nova senha deve ter entre 5 e 10 caracteres");
+                Usuario.ValidarSenha(novaSenha);
 
                 _senhaInterface.CriarSenhaHash(novaSenha, out byte[] hash, out byte[] salt);
 
