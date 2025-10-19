@@ -60,5 +60,11 @@ namespace Domain.Models
 
             AceitouPoliticaPrivacidade = aceitou;
         }
+
+        public static void ValidarSenha(string senha)
+        {
+            if (string.IsNullOrWhiteSpace(senha) || !Regex.IsMatch(senha, @"^.{5,10}$"))
+                throw new ValidacaoException("Senha inválida: deve ter entre 5 e 10 caracteres");
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
+using Infrastructure.Exceptions;
 
 namespace Infrastructure.Repositories
 {
@@ -14,13 +15,19 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public Task<Chamado> AdicionarAsync(Chamado chamado)
+        public Task<Chamado> Adicionar(Chamado chamado)
         {
             _context.Chamado.Add(chamado);
             return Task.FromResult(chamado);
         }
 
-        public async Task<List<Chamado>> ObterPorUsuarioAsync(int usuarioId)
+        public Task Atualizar(Chamado chamado)
+        {
+            _context.Chamado.Update(chamado);
+            return Task.CompletedTask;
+        }
+
+        public async Task<List<Chamado>> ObterPorUsuario(int usuarioId)
         {
             return await _context.Chamado
                 .Include(c => c.Usuario)
@@ -29,30 +36,33 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> SalvarAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<Chamado?> ObterIdAsync(int id)
+        public async Task<Chamado?> ObterId(int id)
         {
             return await _context.Chamado
                 .Include(c => c.Usuario)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public Task AtualizarAsync(Chamado chamado)
-        {
-            _context.Chamado.Update(chamado);
-            return Task.CompletedTask;
-        }
-
-        public async Task<List<Chamado>> ObterTodosAsync()
+        public async Task<List<Chamado>> ObterTodos()
         {
             return await _context.Chamado
                 .Include(c => c.Usuario)
                 .OrderByDescending(c => c.ChamadoDataCriacao)
                 .ToListAsync();
+        }
+
+        public async Task Salvar()
+        {
+            try
+            {
+                var resultado = await _context.SaveChangesAsync();
+                if (resultado <= 0)
+                    throw new PersistenciaException("Nenhuma alteração foi salva no banco de dados.");
+            }
+            catch (DbUpdateException)
+            {
+                throw new BancoDeDadosException("Erro ao salvar alterações no banco.");
+            }
         }
     }
 }

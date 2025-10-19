@@ -8,7 +8,6 @@ using Application.Interface;
 using Application.Services;
 using Infrastructure.Data;
 using Application.Configurations;
-using Microsoft.Extensions.Options;
 using Infrastructure.OpenIA;
 using Infrastructure.OpenIA.Prompt;
 
@@ -18,15 +17,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuario, UsuarioService>();
 builder.Services.AddScoped<IChamadoRepository, ChamadoRepository>();
-builder.Services.AddScoped<IAcessoLogRepository, AcessoLogRepository>();
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<ISenha, SenhaService>();
 builder.Services.AddHttpClient<IOpenAi, OpenIAService>();
 builder.Services.AddScoped<IPrompt, GeradorPromptPrioridade>();
 builder.Services.AddScoped<IChamado, ChamadoService>();
-builder.Services.AddScoped<IAcessoLog, AcessoLogService>();
 builder.Services.AddScoped<IToken, TokenService>();
-builder.Services.AddScoped<FiltroLogAcesso>();
 builder.Services.AddScoped<FiltroRespostaSucesso>();
 builder.Services.AddCustomCors();
 builder.Services.AddHttpContextAccessor();
@@ -43,7 +39,6 @@ builder.Services.AddDbContext<AppDbContext>(Options =>
 builder.Services.AddCustomControllers(options =>
 {
     options.Filters.Add<FiltroRespostaSucesso>();
-    options.Filters.Add<FiltroLogAcesso>();
 });
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>

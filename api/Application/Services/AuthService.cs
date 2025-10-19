@@ -21,7 +21,7 @@ namespace Application.Services
         public async Task<UsuarioLoginRespostaDto> Login(UsuarioLoginDto usuarioLogin)
         {
 
-            var usuario = await _usuarioRepository.ObterPorEmailAsync(usuarioLogin.Email.ToLower());
+            var usuario = await _usuarioRepository.ObterPorEmail(usuarioLogin.Email.ToLower());
             if (usuario == null)
                 throw new NaoEncontradoException("Email inválido!");
 

@@ -12,7 +12,6 @@ namespace Infrastructure.Data
 
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Chamado> Chamado { get; set; }
-        public DbSet<AcessoLog> AcessoLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,12 +20,6 @@ namespace Infrastructure.Data
                 .WithMany(u => u.Chamados)
                 .HasForeignKey(c => c.UsuarioId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<AcessoLog>()
-               .HasOne<Usuario>()
-               .WithMany()
-               .HasForeignKey(l => l.UsuarioId)
-               .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

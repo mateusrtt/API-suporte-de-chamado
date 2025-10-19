@@ -42,7 +42,7 @@ namespace Api_tests
 
             var usuario = new Usuario("Teste", dto.Email, CargoEnum.Usuario, new byte[1], new byte[1], true);
 
-            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
+            _usuarioRepoMock.Setup(x => x.ObterPorEmail(dto.Email)).ReturnsAsync(usuario);
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(true);
             _tokenMock.Setup(x => x.CriarToken(usuario)).Returns("fake-jwt-token");
 
@@ -62,7 +62,7 @@ namespace Api_tests
             // Arrange
             var dto = new UsuarioLoginDto { Email = "teste@email.com", Senha = "senha" };
 
-            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync((Usuario?)null);
+            _usuarioRepoMock.Setup(x => x.ObterPorEmail(dto.Email)).ReturnsAsync((Usuario?)null);
 
             // Act Assert
             var ex = await Assert.ThrowsAsync<NaoEncontradoException>(() => _authService.Login(dto));
@@ -88,7 +88,7 @@ namespace Api_tests
                 true
             );
 
-            _usuarioRepoMock.Setup(x => x.ObterPorEmailAsync(dto.Email)).ReturnsAsync(usuario);
+            _usuarioRepoMock.Setup(x => x.ObterPorEmail(dto.Email)).ReturnsAsync(usuario);
             _senhaMock.Setup(x => x.VerificaSenhaHash(dto.Senha, usuario.SenhaHash, usuario.SenhaSalt)).Returns(false);
 
             // Act & Assert
