@@ -30,7 +30,7 @@ namespace Application.Services
 
             var token = _tokenService.CriarToken(usuario);
 
-            var usuarioDto = new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
+            var usuarioDto = new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email, usuario.Cargo);
             return new UsuarioLoginRespostaDto(usuarioDto, token);
         }
     }

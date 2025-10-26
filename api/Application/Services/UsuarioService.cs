@@ -49,7 +49,7 @@ namespace Application.Services
             await _usuarioRepository.Adicionar(usuario);
             await _usuarioRepository.Salvar();
 
-            return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
+            return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email, usuario.Cargo);
         }
 
         public async Task<UsuarioLeituraDto> Atualizar(int id, UsuarioUpdateDto dto, int usuarioLogadoId)
@@ -95,7 +95,7 @@ namespace Application.Services
             await _usuarioRepository.Atualizar(usuario);
             await _usuarioRepository.Salvar();
 
-            return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email);
+            return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email, usuario.Cargo);
         }
 
         public async Task<bool> Deletar(int id, int usuarioLogadoId)
