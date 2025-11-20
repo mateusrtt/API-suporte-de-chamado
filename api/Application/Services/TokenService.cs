@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace Application.Services
 {
+    // Serviço responsável pela geração de tokens JWT
     public class TokenService : IToken
     {
         private readonly JwtConfig _jwtConfig;
@@ -16,6 +17,11 @@ namespace Application.Services
             _jwtConfig = jwtConfig.Value;
         }
 
+        /// <summary>
+        /// Gera um token JWT contendo as informações essenciais do usuário.
+        /// </summary>
+        /// <param name="usuario">Objeto do usuário autenticado.</param>
+        /// <returns>String contendo o token JWT gerado.</returns>
         public string CriarToken(Usuario usuario)
         {
             List<Claim> claims = new List<Claim>()

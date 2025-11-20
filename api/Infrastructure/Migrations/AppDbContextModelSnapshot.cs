@@ -70,6 +70,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Cargo")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -85,9 +88,6 @@ namespace Infrastructure.Migrations
                     b.Property<byte[]>("SenhaSalt")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<DateTime>("TokenDataCriacao")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

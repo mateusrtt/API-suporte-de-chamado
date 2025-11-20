@@ -1,5 +1,6 @@
 ﻿namespace Application.Dtos
 {
+    // DTO usado para retornar o usuário e o token após login
     public class UsuarioLoginRespostaDto
     {
         public UsuarioLeituraDto Usuario { get; set; }

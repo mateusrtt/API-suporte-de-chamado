@@ -15,18 +15,21 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
+        // Adiciona um chamado ao contexto
         public Task<Chamado> Adicionar(Chamado chamado)
         {
             _context.Chamado.Add(chamado);
             return Task.FromResult(chamado);
         }
 
+        // Marca o chamado para atualização
         public Task Atualizar(Chamado chamado)
         {
             _context.Chamado.Update(chamado);
             return Task.CompletedTask;
         }
 
+        // Obtém todos os chamados de um usuário
         public async Task<List<Chamado>> ObterPorUsuario(int usuarioId)
         {
             return await _context.Chamado
@@ -36,6 +39,7 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        // Busca um chamado pelo ID
         public async Task<Chamado?> ObterId(int id)
         {
             return await _context.Chamado
@@ -43,6 +47,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        // Busca todos os chamados cadastrados
         public async Task<List<Chamado>> ObterTodos()
         {
             return await _context.Chamado
@@ -51,6 +56,7 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        // Salva alterações no banco
         public async Task Salvar()
         {
             try

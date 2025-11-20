@@ -6,6 +6,7 @@ namespace Api.Extensions
 {
     public static class ControllersExtensions
     {
+        // Configura os controllers e ajusta as opções de serialização JSON
         public static IServiceCollection AddCustomControllers(this IServiceCollection services, Action<MvcOptions>? configureMvc = null)
         {
             services.AddControllers(options =>

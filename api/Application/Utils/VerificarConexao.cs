@@ -1,5 +1,6 @@
 ﻿namespace Application.Utils
 {
+    // Classe utilitária responsável por verificar conexão com a internet
     public class VerificarConexao
     {
         public static async Task<bool> TemInternet()

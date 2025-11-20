@@ -5,6 +5,7 @@ using Domain.Exceptions;
 
 namespace Application.Services
 {
+    // Serviço responsável pela autenticação
     public class AuthService : IAuth
     {
         private readonly IUsuarioRepository _usuarioRepository;
@@ -18,6 +19,14 @@ namespace Application.Services
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Realiza o processo de login verificando email e senha,
+        /// e retorna um token juntamente com os dados do usuário.
+        /// </summary>
+        /// <param name="usuarioLogin">DTO contendo email e senha enviados pelo usuário.</param>
+        /// <returns>Um objeto contendo os dados do usuário e o token JWT.</returns>
+        /// <exception cref="NaoEncontradoException">Lançado quando o email não existe no sistema.</exception>
+        /// <exception cref="ValidacaoException">Lançado quando a senha é inválida.</exception>
         public async Task<UsuarioLoginRespostaDto> Login(UsuarioLoginDto usuarioLogin)
         {
 

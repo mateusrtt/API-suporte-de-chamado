@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Services
 {
+    // Serviços responsável dos usuários
     public class UsuarioService : IUsuario
     {
         private readonly IUsuarioRepository _usuarioRepository;
@@ -21,6 +22,15 @@ namespace Application.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Registra um novo usuário no sistema, verificando email duplicado,
+        /// validando senha e atribuindo o cargo correto.
+        /// </summary>
+        /// <param name="usuarioRegistro">Dados enviados para criação do usuário.</param>
+        /// <param name="cargo">Cargo padrão é 'Usuario', exceto quando um admin cria o usuário.</param>
+        /// <returns>Um DTO contendo os dados do usuário recém-criado.</returns>
+        /// <exception cref="ConflitoException">Lançado se o email já estiver cadastrado.</exception>
+        /// <exception cref="ValidacaoException">Lançado para senhas inválidas ou confirmação incorreta.</exception>
         public async Task<UsuarioLeituraDto> Registrar(UsuarioCriacaoDto usuarioRegistro, CargoEnum cargo = CargoEnum.Usuario)
         {
             if (await _usuarioRepository.EmailJaCadastrado(usuarioRegistro.Email))
@@ -52,6 +62,17 @@ namespace Application.Services
             return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email, usuario.Cargo);
         }
 
+        /// <summary>
+        /// Atualiza os dados do usuário logado, incluindo nome, email e senha.
+        /// </summary>
+        /// <param name="id">ID do usuário que será atualizado.</param>
+        /// <param name="dto">Dados enviados para atualização.</param>
+        /// <param name="usuarioLogadoId">ID do usuário autenticado.</param>
+        /// <returns>DTO contendo os dados atualizados do usuário.</returns>
+        /// <exception cref="NaoAutorizadoException">Lançado quando o usuário tenta atualizar outra conta.</exception>
+        /// <exception cref="NaoEncontradoException">Lançado se o usuário não existir.</exception>
+        /// <exception cref="ValidacaoException">Lançado em erros de validação de senha.</exception>
+        /// <exception cref="ConflitoException">Lançado se o email estiver em uso por outro usuário.</exception>
         public async Task<UsuarioLeituraDto> Atualizar(int id, UsuarioUpdateDto dto, int usuarioLogadoId)
         {
             if (id != usuarioLogadoId)
@@ -98,6 +119,14 @@ namespace Application.Services
             return new UsuarioLeituraDto(usuario.Id, usuario.Nome, usuario.Email, usuario.Cargo);
         }
 
+        /// <summary>
+        /// Remove a conta do usuário logado do sistema.
+        /// </summary>
+        /// <param name="id">ID do usuário a ser deletado.</param>
+        /// <param name="usuarioLogadoId">ID do usuário autenticado.</param>
+        /// <returns>True se a exclusão for bem-sucedida.</returns>
+        /// <exception cref="NaoAutorizadoException">Lançado quando o usuário tenta excluir outra conta.</exception>
+        /// <exception cref="NaoEncontradoException">Lançado quando o usuário não existe.</exception>
         public async Task<bool> Deletar(int id, int usuarioLogadoId)
         {
             if (id != usuarioLogadoId)

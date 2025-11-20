@@ -13,6 +13,7 @@ namespace Infrastructure.Data
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Chamado> Chamado { get; set; }
 
+        // Configurações de relacionamento entre as entidades
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Chamado>()

@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Application.Dtos
+﻿namespace Application.Dtos
 {
+    // DTO usado para enviar a resposta de um chamado
     public class ResponderChamadoDto
     {
-        [Required(ErrorMessage = "A resposta é obrigatória")]
         public string Resposta { get; set; } = string.Empty;
     }
 }

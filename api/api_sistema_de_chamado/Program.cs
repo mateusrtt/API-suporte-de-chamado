@@ -27,26 +27,28 @@ builder.Services.AddScoped<FiltroRespostaSucesso>();
 builder.Services.AddCustomCors();
 builder.Services.AddHttpContextAccessor();
 
-// Bind da configuração JWT
+// Configuração do JWT
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
-// Banco de dados
+// Configuração do banco de dados
 builder.Services.AddDbContext<AppDbContext>(Options =>
 {
     Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Configuração dos Controllers e filtros globais
 builder.Services.AddCustomControllers(options =>
 {
     options.Filters.Add<FiltroRespostaSucesso>();
 });
 
+// Desabilita o filtro padrão de ModelState
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// Autenticação JWT
+// Autenticação com JWT Bearer
 builder.Services.AddCustomJwtAuthentication(builder.Configuration);
 
 // Swagger 
@@ -54,6 +56,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Middleware global de exceção
 app.UsarMiddlewareDeExcecao();
 
 if (app.Environment.IsDevelopment())

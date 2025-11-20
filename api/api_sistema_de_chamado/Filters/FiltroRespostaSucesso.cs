@@ -6,6 +6,7 @@ using System.Reflection;
 
 namespace Api.Filters
 {
+    // Envolve respostas de sucesso em um modelo padrão da API
     public class FiltroRespostaSucesso : IAsyncResultFilter
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)

@@ -13,7 +13,7 @@ namespace Domain.Models
         public CargoEnum Cargo { get; private set; } 
         public byte[] SenhaHash { get; private set; } = Array.Empty<byte>();
         public byte[] SenhaSalt { get; private set; } = Array.Empty<byte>();
-        public DateTime TokenDataCriacao { get; private set; } = DateTime.Now;
+        public DateTime DataCriacao { get; private set; } = DateTime.Now;
         public ICollection<Chamado>? Chamados { get; private set; }
 
         protected Usuario() { }
@@ -25,7 +25,7 @@ namespace Domain.Models
             DefinirSenha(senhaHash, senhaSalt);
             DefinirPoliticaPrivacidade(aceitoupoliticaPrivacidade);
             Cargo = cargo;
-            TokenDataCriacao = DateTime.Now;
+            DataCriacao = DateTime.Now;
         }
 
         public void DefinirNome(string nome)

@@ -6,6 +6,7 @@ using System.Text.Json;
 
 namespace Api.Middlewares
 {
+    // Middleware que captura exceções e retorna respostas padronizadas da API
     public class MiddlewareExcecao
     {
         private readonly RequestDelegate _next;

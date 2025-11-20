@@ -2,6 +2,7 @@
 
 namespace Application.Dtos
 {
+    // DTO usado para retornar dados do usuário
     public class UsuarioLeituraDto
     {
         public UsuarioLeituraDto(int id, string nome, string email, CargoEnum cargo)

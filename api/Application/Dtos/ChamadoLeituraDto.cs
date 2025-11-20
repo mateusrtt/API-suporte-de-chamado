@@ -2,6 +2,7 @@
 
 namespace Application.Dtos
 {
+    // DTO usado para retornar os dados completos de um chamado
     public class ChamadoLeituraDto
     {
         public int Id { get; set; }

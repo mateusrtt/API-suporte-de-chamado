@@ -1,5 +1,6 @@
 ﻿namespace Application.Dtos
 {
+    // DTO usado para atualizar dados do usuário
     public class UsuarioUpdateDto
     {
         public string? Nome { get; set; }

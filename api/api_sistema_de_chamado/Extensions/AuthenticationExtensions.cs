@@ -9,6 +9,7 @@ namespace Api.Extensions
 {
     public static class AuthenticationExtensions
     {
+        // Configura autenticação JWT
         public static IServiceCollection AddCustomJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtConfig = new JwtConfig();
