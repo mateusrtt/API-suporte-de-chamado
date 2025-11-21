@@ -282,9 +282,9 @@ disponibilizar filtros que permitam ao administrador visualizar separadamente os
 - **RS23 - Acesso de administradores apenas na aplicação web**  
   Dado que o usuário possua perfil de administrador e faça login, quando acessar o sistema, então ele deverá ter acesso apenas às funcionalidades administrativas disponíveis na aplicação web, sendo bloqueado o acesso a essas funções em plataformas mobile ou desktop. Todas as funcionalidades administrativas serão implementadas exclusivamente na versão web.
 
-## 3.4 Requisitos funcionais
+## 3 Requisitos funcionais
 
-Os requisitos funcionais do sistema descrevem as ações que os usuários podem realizar e os comportamentos esperados da aplicação em resposta a essas ações.
+os requisitos funcionais do sistema descrevem as ações que os usuários podem realizar e os comportamentos esperados da aplicação em resposta a essas ações.
 
 # Guia para Rodar e configurar a API
 
