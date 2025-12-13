@@ -282,9 +282,58 @@ disponibilizar filtros que permitam ao administrador visualizar separadamente os
 - **RS23 - Acesso de administradores apenas na aplicação web**  
   Dado que o usuário possua perfil de administrador e faça login, quando acessar o sistema, então ele deverá ter acesso apenas às funcionalidades administrativas disponíveis na aplicação web, sendo bloqueado o acesso a essas funções em plataformas mobile ou desktop. Todas as funcionalidades administrativas serão implementadas exclusivamente na versão web.
 
-## 3 Requisitos funcionais
+## 3 Requisitos funcional
 
 os requisitos funcionais do sistema descrevem as ações que os usuários podem realizar e os comportamentos esperados da aplicação em resposta a essas ações.
+
+- **RF01 - Realizar cadastro de usuário**  
+  Dado que o usuário/admin preencha o formulário de cadastro com nome, email, senha, confirmar senha e concordar com os termos de política de privacidade, então o sistema deve criar a conta.
+
+- **RF02 - Realizar login**  
+  Dado que o usuário/admin insere email e senha válidos, então deve autenticar e redirecionar para seu menu específico.
+
+- **RF03 - Fazer chamado**  
+  Dado que o usuário comum esteja autenticado e digite um chamado em um campo de texto, então o sistema deve validar o tamanho mínimo e máximo de caracteres e após essa validação, criar o chamado.
+
+- **RF04 - Visualizar meus chamados**  
+  Dado que o usuário comum está autenticado, ao clicar em “Meus chamados” então exibir todos os seus chamados com descrição, resposta (caso já tenha sido respondido), status, prioridade e data de criação.
+
+- **RF05 - Gerenciamento de conta**  
+  Dado que o usuário/admin clique na opção “Conta”, então o sistema deverá exibir configurações da sua conta.
+
+- **RF06 - Cadastrar novos administradores**  
+  Dado que o usuário autenticado possua perfil de administrador, ao acessar a tela de cadastro de administradores, o sistema deverá permitir que ele insira os dados do novo administrador, incluindo nome, email, senha, confirmação de senha e aceite as políticas de privacidade.
+
+- **RF07 - Visualizar todos os chamados**  
+  Dado que o admin esteja autenticado e clique na opção “Ver chamados” então o sistema deve listar os chamados de todos os usuários com a opção de ver a lista de chamados pendentes e respondidos.
+
+- **RF08 - Responder chamado**  
+  Dado que o admin seleciona um chamado, então o sistema deve permitir que ele insira uma resposta (O chamado poderá ser respondido apenas uma única vez) e o status deverá ser automaticamente atualizado para “Respondido”.
+
+- **RF09 - Atualização de dados**  
+  Dado que o usuário/admin acesse a opção de gerenciamento de conta, então o sistema deverá permitir que ele atualize seus dados pessoais por meio de um formulário, podendo alterar nome, e-mail e senha. Para alteração de senha, será necessário fornecer a senha atual, a nova senha e a confirmação da nova senha. O usuário poderá alterar apenas os campos que desejar, sem a necessidade de preencher todos os campos obrigatoriamente.
+
+- **RF10 - Excluir conta**  
+  Dado que o usuário/admin acesse a opção de gerenciamento de conta, quando ele clicar no botão de excluir conta, então o sistema deverá permitir que a conta seja removida permanentemente do sistema, excluindo também todos os dados relacionados ao usuário (como chamados vinculados).
+
+## 4 Requisitos não funcional
+
+Os requisitos não funcionais representam as características técnicas e operacionais que o sistema deve possuir para garantir sua qualidade, segurança e desempenho. Para isso utilizamos a norma ISO/IEC 9126 para a classificação.
+
+- **RNF01 - Conformidade com LGPD - Funcionalidade (Conformidade)**  
+  Conformidade com as diretrizes estabelecidas pela lei.
+
+- **RNF02 - Desempenho - Eficiência (Em relação ao tempo)**  
+  Tempo de resposta de 5s em 95% das requisições.
+
+- **RNF03 - Segurança - Funcionalidade (Segurança)**  
+  Autenticação JWT, criptografia de senhas, HTTPS, proteção de dados sensíveis.
+
+- **RNF04 - Disponibilidade - Confiabilidade (Disponibilidade)**  
+  Sistema disponível 99% do tempo para Web, Desktop e Mobile.
+
+- **RNF05 - Multiplataforma - Portabilidade (Adaptabilidade)**  
+  Funcionalidades completas na Web, Desktop e Mobile com recursos de usuário.
 
 # Guia para Rodar e configurar a API
 
