@@ -1,4 +1,36 @@
-# 1 Objetivos de negócio
+# API – SISTEMA DE SUPORTE DE CHAMADOS COM IA
+Neste repositório é apresentada exclusivamente a API do sistema MVP de suporte de chamados integrado com Inteligência Artificial, a qual é responsável por centralizar as regras de negócio e a comunicação entre as diferentes camadas da aplicação.
+
+O sistema foi concebido para atender aplicações web, desktop e mobile, tendo a API como elemento central de integração e comunicação entre as plataformas. Embora este repositório contemple apenas a camada de API, ele reúne toda a documentação geral do sistema, possibilitando a compreensão integral de sua arquitetura, estrutura e funcionamento.
+
+O projeto foi desenvolvido exclusivamente para fins acadêmicos, contando com a participação de sete integrantes, com prazo de quatro meses para desenvolvimento, entrega e avaliação por uma banca examinadora composta por docentes.
+
+Atuei como líder do grupo, sendo responsável pela organização, coordenação das atividades e acompanhamento do projeto desde sua concepção inicial. Minhas atribuições abrangeram o levantamento e a análise de requisitos, a modelagem dos diagramas UML, a elaboração da documentação técnica que descreve detalhadamente o funcionamento da API, bem como o desenvolvimento integral da API na linguagem C# e a integração de recursos de Inteligência Artificial, empregados para a automação dos processos demandados pelo sistema, assegurando que a API atendesse plenamente às necessidades do projeto, uma vez que constitui o núcleo de comunicação entre as aplicações.
+
+# TECNOLOGIAS E DIRETRIZES DE IMPLEMENTAÇÃO
+
+## Tecnologias Utilizadas
+- C# / ASP.NET Core (.NET)
+- Entity Framework Core
+- SQL Server
+- Integração com Inteligência Artificial (ChatGPT)
+
+## Arquitetura, Padrões e Boas Práticas
+- Arquitetura em Camadas
+- Princípios SOLID
+- API REST
+
+## Segurança e Controle de Acesso
+- Autenticação e autorização com JWT (JSON Web Token)
+
+## Conformidade Legal e Proteção de Dados
+- Adequação à Lei Geral de Proteção de Dados (LGPD)
+  
+# DOCUMENTAÇÃO TÉCNICA
+
+Na sequência, é apresentada a documentação técnica geral do sistema, a qual fornece os subsídios necessários para a compreensão do projeto, de sua arquitetura e de seu funcionamento.
+
+# 1 OBJETIVOS DE NÉGOCIO
 
 O objetivo de negócio do sistema é modernizar o atendimento de chamados técnicos por meio do uso da inteligência artificial na automação de prioridade, agilizando a triagem, reduzindo o tempo de resposta e aumentando a produtividade. A solução também apoia a equipe técnica na priorização dos chamados, oferece visibilidade ao usuário com acompanhamento em tempo real e automatiza tarefas repetitivas para reduzir custos operacionais. Além disso, garante a conformidade com a LGPD, assegurando a proteção dos dados dos usuários.
 
