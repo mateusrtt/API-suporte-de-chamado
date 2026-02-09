@@ -9,7 +9,7 @@ Atuei como líder do grupo, sendo responsável pela organização, coordenação
 
 # TECNOLOGIAS E DIRETRIZES DE IMPLEMENTAÇÃO
 
-## Tecnologias Utilizadas
+## Tecnologias 
 - C# / ASP.NET Core (.NET)
 - Entity Framework Core
 - SQL Server
